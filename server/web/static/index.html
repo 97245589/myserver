@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>web server</title>
+    <link href="./bootstrap.min.css" rel="stylesheet">
+    <script src="./jquery-3.4.1.min.js"></script>
+    <script src="./bootstrap.bundle.min.js"></script>
+    <script type="text/javascript">
+        let loading = function () {
+            $("#output").text("执行中 请等待")
+        }
+        let output = function (str) {
+            $("#output").text(str)
+        }
+        let server_mgr_click = function (obj) {
+            loading()
+            let req_data = {
+                cmd: obj.id
+            }
+            $.post("/server_mgr", JSON.stringify(req_data), function (data) {
+                output(data)
+            })
+        }
+        let gm_commit = function (obj) {
+            alert("确认提交？")
+            $("#gm_submit").attr("disabled", "disabled")
+
+            let params = {}
+
+            $("li").each(function () {
+                let id = $(this).attr('id')
+                let cattr = $(this).attr('class')
+                if (cattr && cattr.indexOf("active") != -1) params.server = id
+            })
+            $("textarea").each(function () {
+                let id = $(this).attr('id')
+                if (!id) return
+                if (id == "output") return
+                let val = $(this).val()
+                if (val) {
+                    params[id] = val
+                }
+            })
+
+            $.post("/gmcontent", JSON.stringify(params), function (data) {
+                $("#gm_submit").removeAttr("disabled")
+                output(data)
+            })
+        }
+        let gm_click = function (obj) {
+            let format_gm_form = function (label, id, content) {
+                let str = `<div class="form-group row"><label class="col-sm-2 col-form-label col-form-label-sm">${label}</label><div class="col-sm-10"><textarea id=${id} rows="1" , class="form-control form-control-sm">${content}</textarea></div></div>`
+                return str
+            }
+            loading()
+            let idx = obj.id.substr(3)
+            idx = Number(idx)
+            let req_data = {
+                idx: idx
+            }
+            $.post("/gmplat", JSON.stringify(req_data), function (data) {
+                $("#gm_content").children().remove()
+                output(data)
+                let str = format_gm_form("idx", "idx", idx)
+                $("#gm_content").append(str)
+                let arr = JSON.parse(data).gm
+                for (let i = 0; i < arr.length; ++i) {
+                    let field = arr[i]
+                    let str = format_gm_form(field, field, "")
+                    $("#gm_content").append(str)
+                }
+                let button = '<button id="gm_submit" onclick=gm_commit() class="btn btn-primary btn-sm">提交</button>'
+                $("#gm_content").append(button)
+            })
+        }
+        let add_sub_button = function (arr, base_name) {
+            let format_button_str = function (id, onclick, des) {
+                let str = `<button id=${id} onclick=${onclick} type="button" class="btn btn-secondary btn-sm">${des}</button>`
+                return str
+            }
+            $("#sub_button").children().remove()
+            let cmds = {
+                server_mgr: function () {
+                    for (let i = 0; i < arr.length; ++i) {
+                        let data = arr[i]
+                        let id = data.id
+                        let des = data.des
+                        let j = i + 1
+                        let str = format_button_str(id, "server_mgr_click(this)", `${j}.${des}`)
+                        $("#sub_button").append(str)
+                    }
+                },
+                gmplat: function () {
+                    for (let i = 0; i < arr.length; ++i) {
+                        let data = arr[i]
+                        let des = data.des
+                        let j = i + 1
+                        let id = "gm_" + j
+                        let str = format_button_str(id, "gm_click(this)", `${j}.${des}`)
+                        $("#sub_button").append(str)
+                    }
+                },
+            }
+            cmds[base_name]()
+        }
+        $(document).ready(function () {
+            $("li").click(function () {
+                $(this).siblings().removeClass("active")
+                $(this).addClass("active")
+            })
+
+            $("#server_mgr").click(function () {
+                $.post("/server_mgr", {}, function (data) {
+                    let arr = JSON.parse(data).datas
+                    add_sub_button(arr, "server_mgr")
+                })
+            })
+
+            $("#gmplat").click(function () {
+                $.post("/gmplat", {}, function (data) {
+                    let arr = JSON.parse(data).datas
+                    add_sub_button(arr, "gmplat")
+                })
+            })
+        })
+    </script>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <ul class="navbar-nav mr-auto" , id="server_type">
+            <li id="server1" class="nav-item active">
+                <a class="nav-link" href="#">内网测试</a>
+            </li>
+            <li id="server2" class="nav-item">
+                <a class="nav-link" href="#">内网正式</a>
+            </li>
+            <li id="server3" class="nav-item">
+                <a class="nav-link" href="#">外网测试</a>
+            </li>
+            <li id="server4" class="nav-item">
+                <a class="nav-link" href="#">外网正式</a>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="btn-group">
+        <button id="server_mgr" type="button" class="btn btn-primary">服务器管理</button>
+        <button id="gmplat" type="button" class="btn btn-primary">gm平台</button>
+    </div>
+
+    <div class="d-flex align-items-stretch">
+        <div class="flex-fill">
+            <div id="sub_button" class="btn-group-vertical btn-group-sm">
+                <button type="button" class="btn btn-secondary btn-sm">Left</button>
+                <button type="button" class="btn btn-secondary btn-sm">Middle</button>
+                <button type="button" class="btn btn-secondary btn-sm">Right</button>
+            </div>
+        </div>
+        <div id="gm_content" class="flex-fill">
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label col-form-label-sm">k1</label>
+                <div class="col-sm-10">
+                    <textarea rows="1" , class="form-control form-control-sm"></textarea>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label col-form-label-sm">k2</label>
+                <div class="col-sm-10">
+                    <textarea rows="1" , class="form-control form-control-sm"></textarea>
+                </div>
+            </div>
+            <button class="btn btn-primary btn-sm" type="submit">提交</button>
+        </div>
+        <div class="flex-fill">
+            <div class="input-group">
+                <textarea id="output" rows="1" , class="form-control form-control-sm"></textarea>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

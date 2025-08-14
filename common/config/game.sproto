@@ -1,0 +1,62 @@
+.package {
+    type 0 : integer
+    session 1 : integer
+}
+
+exchange 20000 {
+    request {
+        cpub 0 : string
+    }
+    response {
+        code 0 : integer
+        spub 1 : string
+    }
+}
+
+login_verify 20001 {
+    request {
+        verify 0: *string
+    }
+    response {
+        code 0 : integer
+    }
+}
+
+choose_gameserver 20002 {
+    request {
+        acc 0 : string
+        server 1 : string
+    }
+    response {
+        code 0 : integer
+        host 1 : string
+    }
+}
+
+verify 100 {
+    request {
+        acc 0 : string
+        verify 1 : *string
+    }
+    response {
+        code 0 : integer
+    }
+}
+
+select_player 200 {
+    request {
+        playerid 1 : string
+    }
+    response {
+        code 0 : integer
+    }
+}
+
+push_test 300 {
+    request {
+        test 0 : integer
+    }
+    response {
+        code 0 : integer
+    }
+}
