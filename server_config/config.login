@@ -7,7 +7,6 @@ server_id = 1
 
 root = "./"
 thread = 8
-logpath = root .. "run"
 harbor = 0
 start = "server/main"	-- main script
 luaservice = root .. "skynet/service/?.lua;" .. root .. "/?.lua;"
@@ -15,3 +14,6 @@ lualoader = root .. "skynet/lualib/loader.lua"
 lua_path = root .. "skynet/lualib/?.lua;" .. root .. "/?.lua;"
 lua_cpath = root .. "skynet/luaclib/?.so;" .. root .. "luaclib/?.so"
 cpath = root.."/skynet/cservice/?.so"
+
+--logger = "run/" .. server_name .. server_id .. ".log"
+--daemon = "run/" .. server_name .. server_id .. ".pid"

@@ -4,7 +4,6 @@ web_port = 10501
 
 root = "./"
 thread = 2
-logpath = root .. "run"
 harbor = 0
 start = "server/main"	-- main script
 luaservice = root .. "skynet/service/?.lua;" .. root .. "/?.lua;"

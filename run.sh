@@ -1,14 +1,16 @@
 localip=`ifconfig | grep inet | head -1 | awk '{print $2}'`
 export IP="0.0.0.0"
 
-# while getopts "Dk" arg
+# export ROOT=$(cd `dirname $0`; pwd)
+# export DAEMON=false
+# while getopts "dk" arg
 # do
 # 	case $arg in
-# 		D)
+# 		d)
 # 			export DAEMON=true
 # 			;;
 # 		k)
-# 			kill `cat $ROOT/run/skynet.pid`
+# 			kill `cat run/skynet.pid`
 # 			exit 0;
 # 			;;
 # 	esac

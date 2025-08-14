@@ -3,7 +3,6 @@ debug_console_port = 10400
 
 root = "./"
 thread = 5
-logpath = root .. "run"
 harbor = 0
 start = "server/main"	-- main script
 luaservice = root .. "skynet/service/?.lua;" .. root .. "/?.lua;"
