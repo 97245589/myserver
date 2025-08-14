@@ -1,3 +1,6 @@
 *.o
 *.so
 *.vscode
+server_config
+run
+3rd
