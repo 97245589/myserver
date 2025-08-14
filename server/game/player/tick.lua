@@ -63,12 +63,15 @@ skynet.fork(function()
     local TICK_TIME = 100
     while true do
         skynet.sleep(TICK_TIME)
-        pcall(function()
+        local ok, ret = pcall(function()
             tick_save()
             mgrs.all_tick()
             for playerid, player in pairs(players) do
                 mgrs.all_tick_player(player)
             end
         end)
+        if not ok then
+            print("tick err", ret)
+        end
     end
 end)

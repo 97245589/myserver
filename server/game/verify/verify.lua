@@ -94,11 +94,12 @@ local req = {
 }
 
 cmds.data = function(fd, msg, gate)
-    local ok, _, name, args, res = pcall(function()
+    local ok, ret, name, args, res = pcall(function()
         return host:dispatch(msg)
     end)
 
     if not ok then
+        print(ret)
         close_fd(fd)
         return
     end

@@ -1,4 +1,4 @@
-local pcall = pcall
+local print, pcall = print, pcall
 local skynet = require "skynet"
 local zstd = require "common.tool.zstd"
 
@@ -11,9 +11,12 @@ end
 skynet.fork(function()
     while true do
         skynet.sleep(100)
-        pcall(function()
+        local ok, ret = pcall(function()
             save_db()
         end)
+        if not ok then
+            print(ret)
+        end
     end
 end)
 

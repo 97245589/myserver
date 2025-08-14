@@ -51,7 +51,7 @@ local node_conn_to_center = function()
         cluster.reload(cluster_node)
         print("diff", dump(diff))
         if diff_func then
-            pcall(diff_func, diff)
+            diff_func(diff)
         end
     end
 end

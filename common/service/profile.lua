@@ -1,4 +1,4 @@
-local print, dump, pcall, table, pairs = print, dump, pcall, table, pairs
+local print, dump, table, pairs = print, dump, table, pairs
 local SERVICE_NAME = SERVICE_NAME
 local skynet = require "skynet"
 
@@ -39,11 +39,9 @@ end
 
 skynet.fork(function()
     while true do
-        pcall(function()
-            skynet.sleep(PRINT_PROFILE)
-            statistic()
-            data = {}
-        end)
+        skynet.sleep(PRINT_PROFILE)
+        statistic()
+        data = {}
     end
 end)
 

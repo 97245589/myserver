@@ -37,11 +37,12 @@ local start_func = function(name)
             if ok then
                 skynet.retpack(ret)
             else
+                print("cmd err", cmd, ret)
                 skynet.response()(false)
             end
         else
             skynet.response()(false)
-            print(SERVICE_NAME .. " service lua command not found", cmd)
+            print(SERVICE_NAME .. "command not found", cmd)
         end
         local time = profile.stop()
         local cmd_name = "rpc.." .. cmd
