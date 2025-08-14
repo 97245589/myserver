@@ -13,7 +13,7 @@ LUACLIB = luaclib/lfs.so
 all : $(SKYNET) $(LUACLIB) 
 
 $(SKYNET):
-	git submodule init &&  make linux -j$(THREAD_NUM) -Cskynet
+	git submodule update --init &&  make linux -j$(THREAD_NUM) -Cskynet
 
 $(LUACLIB):
 	make -j$(THREAD_NUM) -Cluaclib
