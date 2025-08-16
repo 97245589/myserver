@@ -25,6 +25,9 @@ if mode == "child" then
         del = function(key)
             db:del(key)
         end,
+        hdel = function(arr)
+            db:hdel(arr)
+        end,
         realkeys = function()
             local tb = db:realkeys()
             return next(tb) and tb
@@ -44,31 +47,44 @@ if mode == "child" then
 else
     local addr = skynet.uniqueservice("common/tool/leveldb", "child")
 
-    local send = function(...)
-        skynet.send(addr, "lua", ...)
-    end
-
-    local call = function(...)
-        return skynet.call(addr, "lua", ...)
-    end
-
-    return {
-        del = function(key)
-            send("del", key)
-        end,
-        keys = function()
-            return call("keys")
-        end,
-        hgetall = function(key)
-            return call("hgetall", key)
-        end,
+    local handle = {
         hmset = function(key, ...)
             local arr = table.pack(...)
             for i = 1, #arr, 2 do
                 arr[i] = key .. SPLIT_CHAR .. arr[i]
             end
-            call("hmset", arr)
+            return arr
         end,
+        hdel = function(key, ...)
+            local arr = table.pack(...)
+            for i = 1, #arr do
+                arr[i] = key .. SPLIT_CHAR .. arr[i]
+            end
+            return arr
+        end
+    }
+
+    local send = function(cmd, ...)
+        local func = handle[cmd]
+        if not func then
+            skynet.send(addr, "lua", cmd, ...)
+        else
+            skynet.send(addr, "lua", cmd, func(...))
+        end
+    end
+
+    local call = function(cmd, ...)
+        local func = handle[cmd]
+        if not func then
+            return skynet.call(addr, "lua", cmd, ...)
+        else
+            return skynet.call(addr, "lua", cmd, func(...))
+        end
+    end
+
+    return {
+        call = call,
+        send = send,
         real_keys = function()
             return call("realkeys")
         end

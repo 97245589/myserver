@@ -33,12 +33,35 @@ struct Lleveldb {
   static int hmset(lua_State *L);
   static int hgetall(lua_State *L);
   static int keys(lua_State *L);
+  static int hdel(lua_State *L);
 
   static void search_key(leveldb::DB *&db, string str,
                          function<void(string, string, string)> func);
 
   const static char split_ = 0xff;
 };
+
+int Lleveldb::hdel(lua_State *L) {
+  Leveldb_data *p = (Leveldb_data *)luaL_checkudata(L, 1, LLEVELDB_META);
+  leveldb::DB *db = p->db_;
+
+  luaL_checktype(L, 2, LUA_TTABLE);
+  uint32_t len = lua_rawlen(L, 2);
+  if (0 == len) {
+    return luaL_error(L, "leveldb hdel len arr");
+  }
+
+  leveldb::WriteBatch batch;
+  for (int i = 0; i < len; ++i) {
+    lua_settop(L, 2);
+    lua_rawgeti(L, 2, i + 1);
+    size_t lk;
+    const char *pk = lua_tolstring(L, 3, &lk);
+    batch.Delete({pk, lk});
+  }
+  db->Write(leveldb::WriteOptions(), &batch);
+  return 0;
+}
 
 int Lleveldb::realkeys(lua_State *L) {
   Leveldb_data *p = (Leveldb_data *)luaL_checkudata(L, 1, LLEVELDB_META);
@@ -150,7 +173,7 @@ int Lleveldb::hmset(lua_State *L) {
   luaL_checktype(L, 2, LUA_TTABLE);
   uint32_t len = lua_rawlen(L, 2);
   if (len <= 0 || len % 2 != 0) {
-    return luaL_error(L, "leveldb batch table len err");
+    return luaL_error(L, "leveldb hmset len err");
   }
 
   leveldb::WriteBatch batch;
@@ -176,9 +199,9 @@ int Lleveldb::lleveldb_gc(lua_State *L) {
 
 void Lleveldb::lleveldb_meta(lua_State *L) {
   if (luaL_newmetatable(L, LLEVELDB_META)) {
-    luaL_Reg l[] = {{"del", del},           {"hmset", hmset},
-                    {"hgetall", hgetall},   {"keys", keys},
-                    {"realkeys", realkeys}, {NULL, NULL}};
+    luaL_Reg l[] = {{"del", del},   {"hmset", hmset}, {"hgetall", hgetall},
+                    {"hdel", hdel}, {"keys", keys},   {"realkeys", realkeys},
+                    {NULL, NULL}};
     luaL_newlib(L, l);
     lua_setfield(L, -2, "__index");
     lua_pushcfunction(L, lleveldb_gc);
