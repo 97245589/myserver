@@ -4,14 +4,19 @@ SKYNET_DIR = ../skynet/skynet-src
 
 COMMON_FLAGS = -O2 -fPIC -I$(LUA_DIR)
 
-all : lfs.so lzstd.so lutil.so lkcp.so
+3RDPATH = ../3rd
+3RDFLAG = -I$(3RDPATH) -L$(3RDPATH)
+
+all : lfs.so lzstd.so lutil.so lkcp.so lleveldb.so
 
 lfs.so : lfs/lfs.c
 	$(CC) -o $@ $^ $(COMMON_FLAGS) $(DY_LIB)
 
-ZSTDPATH = ../3rd
 lzstd.so : lzstd/lzstd.c
-	$(CC) -o $@ $^ $(COMMON_FLAGS) $(DY_LIB) -I$(ZSTDPATH) -L$(ZSTDPATH) -lzstd 
+	$(CC) -o $@ $^ $(COMMON_FLAGS) $(DY_LIB) $(3RDFLAG) -lzstd
+
+lleveldb.so : leveldb/*.cc
+	$(CXX) -o $@ $^ $(COMMON_FLAGS) $(DY_LIB) $(CXXFLAGS) $(3RDFLAG) -lleveldb
 
 lutil.so : lutil/*.cc
 	$(CXX) -o $@ $^ $(COMMON_FLAGS) $(DY_LIB) $(CXXFLAGS)

@@ -1,3 +1,4 @@
+require "common.tool.lua_tool"
 local require, print = require, print
 local skynet = require "skynet"
 
@@ -15,7 +16,7 @@ if mode == "child" then
         end)
     end)
 else
-    local addr = skynet.uniqueservice("common/service/db", "child")
+    local addr = skynet.uniqueservice("common/tool/redis", "child")
 
     local dbsend = function(...)
         skynet.send(addr, "lua", ...)

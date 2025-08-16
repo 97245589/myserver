@@ -5,48 +5,48 @@ local skynet = require "skynet"
 local format = string.format
 
 local test = function()
-    local db = require "common.service.db"
-    local dbsend = db.send
-    local dbcall = db.call
+    local redis = require "common.tool.redis"
+    local send = redis.send
+    local call = redis.call
 
     for i = 1, 100 do
-        dbcall("set", "hello" .. i, "world" .. i)
+        call("set", "hello" .. i, "world" .. i)
     end
-    print(dbcall("get", "hello5"), dbcall("get", "hello100"))
+    print(call("get", "hello5"), call("get", "hello100"))
 
     local n = 10000
     local t = skynet.now()
     local get_test = function(m)
         for i = 1, n do
-            local ret = dbcall("get", "hello" .. i)
+            local ret = call("get", "hello" .. i)
         end
         print(format("%s get %s times cost %s", m, n, skynet.now() - t))
     end
 
-    for i = 1, 10 do
+    for i = 1, 5 do
         skynet.fork(get_test, i)
     end
 end
 
 local test_scan = function()
-    local db = require "common.service.db"
-    db.scan("*", 10, function(arr)
+    local redis = require "common.tool.redis"
+    redis.scan("*", 10, function(arr)
         print("test all", #arr)
     end)
 
-    db.scan("*", 5, function(arr)
+    redis.scan("*", 5, function(arr)
         print("test maxlen", #arr)
     end, 30)
 
-    db.scan("hello1*", 3, function(arr)
-        print(dump(arr, "hello1"))
+    redis.scan("hello1*", 3, function(arr)
+        print(dump(arr))
     end)
 end
 
 local stress = function()
-    local db = require "common.service.db"
+    local redis = require "common.tool.redis"
     local zstd = require "common.tool.zstd"
-    local call = db.call
+    local call = redis.call
 
     local arr = {}
     for i = 1, 10000 do

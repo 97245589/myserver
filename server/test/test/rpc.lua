@@ -46,22 +46,10 @@ else
         print(format("skynet name call %s times cost: %s", n, skynet.now() - t))
     end
 
-    local test_redis = function()
-        local db = require "common.service.db"
-        local call = db.call
-        local t = skynet.now()
-        local n = 1e4
-        for i = 1, n do
-            local ret = call("get", "hello")
-        end
-        print(format("redis call %s times cost: %s", n, skynet.now() - t))
-    end
-
     skynet.start(function()
         addr = skynet.newservice("server/test/test/rpc", "child")
         calltest()
         test()
-        test_redis()
         skynet.exit()
     end)
 end
