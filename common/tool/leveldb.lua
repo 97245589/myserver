@@ -14,6 +14,10 @@ if mode == "child" then
         hmset = function(arr)
             db:hmset(arr)
         end,
+        hmget = function(arr)
+            local tb = db:hmget(arr)
+            return next(tb) and tb
+        end,
         hgetall = function(key)
             local tb = db:hgetall(key)
             return next(tb) and tb
@@ -51,6 +55,13 @@ else
         hmset = function(key, ...)
             local arr = table.pack(...)
             for i = 1, #arr, 2 do
+                arr[i] = key .. SPLIT_CHAR .. arr[i]
+            end
+            return arr
+        end,
+        hmget = function(key, ...)
+            local arr = table.pack(...)
+            for i = 1, #arr do
                 arr[i] = key .. SPLIT_CHAR .. arr[i]
             end
             return arr

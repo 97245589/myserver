@@ -34,12 +34,46 @@ struct Lleveldb {
   static int hgetall(lua_State *L);
   static int keys(lua_State *L);
   static int hdel(lua_State *L);
+  static int hmget(lua_State *L);
 
   static void search_key(leveldb::DB *&db, string str,
                          function<void(string, string, string)> func);
 
   const static char split_ = 0xff;
 };
+
+int Lleveldb::hmget(lua_State *L) {
+  Leveldb_data *p = (Leveldb_data *)luaL_checkudata(L, 1, LLEVELDB_META);
+  leveldb::DB *db = p->db_;
+
+  luaL_checktype(L, 2, LUA_TTABLE);
+  uint32_t len = lua_rawlen(L, 2);
+  if (0 == len) {
+    return luaL_error(L, "leveldb hmget len arr");
+  }
+
+  lua_createtable(L, 0, len);
+  for (int i = 0; i < len; ++i) {
+    lua_rawgeti(L, 2, i + 1);
+    size_t lk;
+    const char *pk = lua_tolstring(L, -1, &lk);
+    std::string val;
+    leveldb::Status s = db->Get(leveldb::ReadOptions(), {pk, lk}, &val);
+    if (s.ok()) {
+      string str = {pk, lk};
+      int p = str.find(split_);
+      if (p < 0 || p >= str.size() - 1) {
+        continue;
+      }
+      string key = str.substr(p + 1);
+      lua_pushlstring(L, key.c_str(), key.size());
+      lua_pushlstring(L, val.c_str(), val.size());
+      lua_settable(L, 3);
+    }
+    lua_settop(L, 3);
+  }
+  return 1;
+}
 
 int Lleveldb::hdel(lua_State *L) {
   Leveldb_data *p = (Leveldb_data *)luaL_checkudata(L, 1, LLEVELDB_META);
@@ -199,9 +233,9 @@ int Lleveldb::lleveldb_gc(lua_State *L) {
 
 void Lleveldb::lleveldb_meta(lua_State *L) {
   if (luaL_newmetatable(L, LLEVELDB_META)) {
-    luaL_Reg l[] = {{"del", del},   {"hmset", hmset}, {"hgetall", hgetall},
-                    {"hdel", hdel}, {"keys", keys},   {"realkeys", realkeys},
-                    {NULL, NULL}};
+    luaL_Reg l[] = {{"del", del},           {"hmset", hmset}, {"hmget", hmget},
+                    {"hgetall", hgetall},   {"hdel", hdel},   {"keys", keys},
+                    {"realkeys", realkeys}, {NULL, NULL}};
     luaL_newlib(L, l);
     lua_setfield(L, -2, "__index");
     lua_pushcfunction(L, lleveldb_gc);
