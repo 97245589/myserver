@@ -22,13 +22,20 @@ local load_proto = function()
 end
 load_proto()
 
-local send_package = function(fd, pack)
-    socket.write(fd, string.pack(">s2", pack))
-end
-
 local cli_req = {}
 local fd_playerid = {}
 local playerid_fd = {}
+
+local send_package = function(fd, pack)
+    local ret = socket.write(fd, string.pack(">s2", pack))
+    if not ret then
+        local playerid = fd_playerid[fd]
+        if playerid then
+            playerid_fd[playerid] = nil
+        end
+        fd_playerid[fd] = nil
+    end
+end
 
 local kick_player = function(playerid, noclose)
     local fd = playerid_fd[playerid]

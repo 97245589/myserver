@@ -24,7 +24,6 @@ local start_func = function(name)
         package_reload.remove_hotreload_package()
         package_reload.dir_require(service_dir .. "/cmd")
         package_reload.dir_require(service_dir .. "/mgr")
-        print(SERVICE_NAME, "reload success")
     end
 
     cmds.hotreload = hotreload
