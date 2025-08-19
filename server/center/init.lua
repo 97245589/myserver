@@ -1,6 +1,6 @@
 local require, print, os, pairs = require, print, os, pairs
 require "common.tool.lua_tool"
-local print_v, dump = print_v, dump
+local dump = dump
 local skynet = require "skynet"
 local config = require "common.service.service_config"
 
@@ -36,7 +36,7 @@ local check_heartbeat = function()
                 cluster_node[cluster_name] = nil
             end
         end
-        print("cluster node", dump(cluster_node, skynet.now()))
+        print(skynet.now(), "cluster_node", dump(cluster_node))
     end
 end
 

@@ -2,7 +2,7 @@ require "common.tool.lua_tool"
 local require = require
 local type, math, collectgarbage = type, math, collectgarbage
 local pairs, next = pairs, next
-local print, print_v, dump, split = print, print_v, dump, split
+local print, dump, split = print, dump, split
 local format = string.format
 local skynet = require "skynet"
 
@@ -85,14 +85,34 @@ local gc_test = function()
     collectgarbage("collect")
     local mem = math.floor(collectgarbage("count") / 1000)
     print(format("memuse: %sM, gctm: %s", mem, skynet.now() - t))
+end
 
+local print_test = function()
+    local obj = {
+        hello = "world",
+        func = function()
+        end,
+        [1] = {
+            [2] = {
+                [3] = {
+                    [4] = 5
+                }
+            },
+            ["2_1"] = 10
+        }
+    }
+
+    print(dump(obj))
+    print(dump(obj, 2))
+    print(dump(_G, 2))
 end
 
 skynet.start(function()
-    split_test()
-    zstd_test()
-    dir_require_test()
-    crypt_test()
-    gc_test()
+    -- split_test()
+    -- zstd_test()
+    -- dir_require_test()
+    -- crypt_test()
+    -- gc_test()
+    print_test()
     skynet.exit()
 end)

@@ -1,5 +1,5 @@
 require "common.tool.lua_tool"
-local require, print, print_v, dump = require, print, print_v, dump
+local require, print, dump = require, print, dump
 local skynet = require "skynet"
 local sproto = require "sproto"
 local format = string.format
@@ -84,7 +84,7 @@ local encode = function()
     local bin = sp:pencode("Test", test)
     local spobj = sp:pdecode("Test", bin)
 
-    print("objcompare", dump(test, "obj"), dump(spobj, "spobj"))
+    print("objcompare", dump(test), dump(spobj))
 end
 
 local rpc_test = function()

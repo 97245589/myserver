@@ -42,8 +42,7 @@ print_r = function(v)
     print(tdump(v))
 end
 
-local odump = function(v, k)
-    k = k or "root"
+local odump = function(v, max_depth)
     local tmp = {}
     local cache = {}
     local _dump
@@ -58,10 +57,12 @@ local odump = function(v, k)
         return r
     end
 
-    _dump = function(v, space, k)
+    _dump = function(v, space, k, depth)
         k = k or ""
         local nspace = space .. "    "
         local k = space .. pack_k(k) .. " = "
+
+        depth = depth + 1
         if type(v) == "number" then
             tinsert(tmp, k .. v .. ",")
         elseif type(v) == "string" then
@@ -72,21 +73,27 @@ local odump = function(v, k)
                 return
             end
             cache[v] = k
-            tinsert(tmp, k .. "{")
-            for vk, vv in pairs(v) do
-                _dump(vv, nspace, vk)
+            if max_depth and depth >= max_depth then
+                tinsert(tmp, k .. "maxdepth" .. ",")
+            else
+                tinsert(tmp, k .. "{")
+                for vk, vv in pairs(v) do
+                    _dump(vv, nspace, vk, depth)
+                end
+                tinsert(tmp, space .. "},")
             end
-            tinsert(tmp, space .. "},")
+        else
+            tinsert(tmp, k .. type(v) .. ",")
         end
     end
 
-    _dump(v, "", k)
+    _dump(v, "", "", -1)
     return tconcat(tmp, "\n")
 end
 dump = odump
 local dump = dump
-print_v = function(v, name)
-    print(dump(v, name))
+print_v = function(v)
+    print(dump(v))
 end
 
 local tclone
