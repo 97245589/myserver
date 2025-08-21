@@ -13,7 +13,7 @@ M.init_player = function(player)
 end
 
 M.tick_player = function(player)
-    push(player, "push_test", {
+    push(player.playerid, "push_test", {
         test = skynet.now()
     })
 end

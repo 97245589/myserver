@@ -58,12 +58,12 @@ local player_enter = function(playerid, fd, gate, acc)
     print(format("playerenter fd:%s playerid: %s", fd, playerid), player)
 end
 
-local push = function(player, name, args)
-    local str = push_req(name, args, 0)
-    local fd = playerid_fd[player.playerid]
+local push = function(playerid, name, args)
+    local fd = playerid_fd[playerid]
     if not fd then
         return
     end
+    local str = push_req(name, args, 0)
     send_package(fd, str)
 end
 
