@@ -14,15 +14,17 @@ local host
 local push_req
 local SERVICE_NAME = SERVICE_NAME
 
-local load_proto = function()
+local M = {}
+M.client_req = {}
+
+M.load_proto = function()
     local config_load = require "common.service.config_load"
     proto = config_load.proto()
     host = proto.host
     push_req = proto.push_req
 end
-load_proto()
+M.load_proto()
 
-local cli_req = {}
 local fd_playerid = {}
 local playerid_fd = {}
 
@@ -37,19 +39,17 @@ local send_package = function(fd, pack)
     end
 end
 
-local kick_player = function(playerid, noclose)
+M.kick_player = function(playerid)
     local fd = playerid_fd[playerid]
     if fd then
         fd_playerid[fd] = nil
-        if not noclose then
-            skynet.send("watchdog", "lua", "close_conn", fd)
-        end
+        skynet.send("watchdog", "lua", "close_conn", fd)
     end
     playerid_fd[playerid] = nil
 end
 
-local player_enter = function(playerid, fd, gate, acc)
-    kick_player(playerid, 1)
+M.player_enter = function(playerid, fd, gate, acc)
+    M.kick_player(playerid)
     skynet.send(gate, "lua", "forward", fd)
     fd_playerid[fd] = playerid
     playerid_fd[playerid] = fd
@@ -58,7 +58,7 @@ local player_enter = function(playerid, fd, gate, acc)
     print(format("playerenter fd:%s playerid: %s", fd, playerid), player)
 end
 
-local push = function(playerid, name, args)
+M.push = function(playerid, name, args)
     local fd = playerid_fd[playerid]
     if not fd then
         return
@@ -73,7 +73,7 @@ local request = function(fd, cmd, args, res)
         return skynet.send("watchdog", "lua", "close_conn", fd)
     end
     local player = players.get_player(playerid)
-    local cli_func = cli_req[cmd]
+    local cli_func = M.client_req[cmd]
     local ret = cli_func(player, args) or {
         code = -1
     }
@@ -97,13 +97,5 @@ skynet.register_protocol({
         profile_info.add_cmd_profile(cmd_name, time)
     end
 })
-
-local M = {
-    cli_req = cli_req,
-    player_enter = player_enter,
-    kick_player = kick_player,
-    push = push,
-    load_proto = load_proto
-}
 
 return M
