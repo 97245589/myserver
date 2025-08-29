@@ -34,11 +34,10 @@ static int lzstd_decompress(lua_State *L) {
   return 1;
 }
 
-static const struct luaL_Reg funcs[] = {{"zstd_compress", lzstd_compress},
-                                        {"zstd_decompress", lzstd_decompress},
-                                        {NULL, NULL}};
-
 LUAMOD_API int luaopen_lzstd(lua_State *L) {
+  luaL_Reg funcs[] = {{"zstd_compress", lzstd_compress},
+                      {"zstd_decompress", lzstd_decompress},
+                      {NULL, NULL}};
   luaL_newlib(L, funcs);
   return 1;
 }

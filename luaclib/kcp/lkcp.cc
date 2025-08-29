@@ -1,12 +1,10 @@
 #include "ikcp.h"
 extern "C" {
-#include <stdio.h>
 #include <string.h>
 
 #include "lauxlib.h"
 #include "lua.h"
 #include "skynet.h"
-#include "skynet_malloc.h"
 #include "skynet_socket.h"
 }
 
@@ -16,7 +14,7 @@ using namespace std;
 const static char *LKCP_META = "LKCP_META";
 
 struct Kcp_user {
-  struct skynet_context *ctx;
+  skynet_context *ctx;
   int host;
   int conv;
   char address[20];
@@ -91,8 +89,8 @@ void Lkcp::lkcp_meta(lua_State *L) {
 }
 
 int Lkcp::udp_output(const char *buf, int len, ikcpcb *kcp, void *user) {
-  struct Kcp_user *kuser = (struct Kcp_user *)user;
-  struct socket_sendbuffer sbuf;
+  Kcp_user *kuser = (Kcp_user *)user;
+  socket_sendbuffer sbuf;
   sbuf.id = kuser->host;
   sbuf.type = SOCKET_BUFFER_RAWPOINTER;
   sbuf.buffer = buf;
@@ -103,7 +101,7 @@ int Lkcp::udp_output(const char *buf, int len, ikcpcb *kcp, void *user) {
 
 int Lkcp::create_lkcp(lua_State *L) {
   lua_getfield(L, LUA_REGISTRYINDEX, "skynet_context");
-  struct skynet_context *ctx = (struct skynet_context *)lua_touserdata(L, -1);
+  skynet_context *ctx = (skynet_context *)lua_touserdata(L, -1);
   if (ctx == NULL) {
     return luaL_error(L, "Init skynet context first");
   }
@@ -132,8 +130,8 @@ int Lkcp::create_lkcp(lua_State *L) {
 }
 
 int Lkcp::cli_output(const char *buf, int len, ikcpcb *kcp, void *user) {
-  struct Kcp_user *kuser = (struct Kcp_user *)user;
-  struct socket_sendbuffer sbuf;
+  Kcp_user *kuser = (Kcp_user *)user;
+  socket_sendbuffer sbuf;
   sbuf.id = kuser->host;
   sbuf.type = SOCKET_BUFFER_RAWPOINTER;
   sbuf.buffer = buf;
@@ -144,14 +142,14 @@ int Lkcp::cli_output(const char *buf, int len, ikcpcb *kcp, void *user) {
 
 int Lkcp::lkcp_client(lua_State *L) {
   lua_getfield(L, LUA_REGISTRYINDEX, "skynet_context");
-  struct skynet_context *ctx = (struct skynet_context *)lua_touserdata(L, -1);
+  skynet_context *ctx = (skynet_context *)lua_touserdata(L, -1);
   if (ctx == NULL) {
     return luaL_error(L, "Init skynet context first");
   }
 
   int conv = luaL_checkinteger(L, 1);
   int host = luaL_checkinteger(L, 2);
-  struct Kcp_user *kuser = new Kcp_user();
+  Kcp_user *kuser = new Kcp_user();
   kuser->ctx = ctx;
   kuser->conv = conv;
   kuser->host = host;
@@ -165,12 +163,11 @@ int Lkcp::lkcp_client(lua_State *L) {
   return 1;
 }
 
-static const struct luaL_Reg l[] = {{"create_lkcp", Lkcp::create_lkcp},
-                                    {"lkcp_client", Lkcp::lkcp_client},
-                                    {NULL, NULL}};
-
 extern "C" {
 LUAMOD_API int luaopen_lkcp(lua_State *L) {
+  luaL_Reg l[] = {{"create_lkcp", Lkcp::create_lkcp},
+                  {"lkcp_client", Lkcp::lkcp_client},
+                  {NULL, NULL}};
   luaL_newlib(L, l);
   return 1;
 }

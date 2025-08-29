@@ -270,11 +270,10 @@ int Lleveldb::create_lleveldb(lua_State *L) {
   return 1;
 }
 
-static const struct luaL_Reg funcs[] = {
-    {"create_lleveldb", Lleveldb::create_lleveldb}, {NULL, NULL}};
-
 extern "C" {
 LUAMOD_API int luaopen_lleveldb(lua_State *L) {
+  luaL_Reg funcs[] = {{"create_lleveldb", Lleveldb::create_lleveldb},
+                      {NULL, NULL}};
   luaL_newlib(L, funcs);
   return 1;
 }

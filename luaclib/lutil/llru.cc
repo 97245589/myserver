@@ -74,11 +74,10 @@ int Llru::create_lru(lua_State *L) {
   return 1;
 }
 
-static const struct luaL_Reg funcs[] = {{"create_lru", Llru::create_lru},
-                                        {NULL, NULL}};
-
 extern "C" {
 LUAMOD_API int luaopen_lutil_lru(lua_State *L) {
+  luaL_Reg funcs[] = {{"create_lru", Llru::create_lru}, {NULL, NULL}};
+
   luaL_newlib(L, funcs);
   return 1;
 }

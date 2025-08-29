@@ -92,11 +92,9 @@ int Lrank::create_lrank(lua_State *L) {
   return 1;
 }
 
-static const struct luaL_Reg funcs[] = {{"create_lrank", Lrank::create_lrank},
-                                        {NULL, NULL}};
-
 extern "C" {
 LUAMOD_API int luaopen_lutil_lrank(lua_State *L) {
+  luaL_Reg funcs[] = {{"create_lrank", Lrank::create_lrank}, {NULL, NULL}};
   luaL_newlib(L, funcs);
   return 1;
 }
