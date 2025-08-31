@@ -24,6 +24,25 @@ local test = function()
     call("del", "test")
 end
 
+local press = function()
+    local db = require "common.tool.leveldb"
+    local call = db.call
+
+    local t = skynet.now()
+    local n = 100000
+    for i = 1, n do
+        call("hmset", i, "hello" .. i, "world" .. i)
+    end
+    print(format("hmset %s times cost %s", n, skynet.now() - t))
+
+    local t = skynet.now()
+    for i = 1, n do
+        call("hgetall", i)
+    end
+    print(format("hgetall %s times cost %s", n, skynet.now() - t))
+end
+
 skynet.start(function()
-    test()
+    -- test()
+    press()
 end)

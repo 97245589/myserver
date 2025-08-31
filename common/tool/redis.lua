@@ -16,14 +16,40 @@ if mode == "child" then
         end)
     end)
 else
+    local table = table
     local addr = skynet.uniqueservice("common/tool/redis", "child")
 
     local dbsend = function(...)
         skynet.send(addr, "lua", ...)
     end
 
-    local dbcall = function(...)
-        return skynet.call(addr, "lua", ...)
+    local handle = {
+        hgetall = function(key, parr, rarr)
+            local ret = {}
+            for i = 1, #rarr, 2 do
+                ret[rarr[i]] = rarr[i + 1]
+            end
+            return ret
+
+        end,
+        hmget = function(key, parr, rarr)
+            local ret = {}
+            for i = 1, #parr do
+                ret[parr[i]] = rarr[i]
+            end
+            return ret
+        end
+    }
+
+    local dbcall = function(cmd, key, ...)
+        local ret = skynet.call(addr, "lua", cmd, key, ...)
+        local func = handle[cmd]
+        if not func then
+            return ret
+        end
+
+        local parr = table.pack(...)
+        return func(key, parr, ret)
     end
 
     local scan = function(match, count, func, maxlen)
