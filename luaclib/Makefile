@@ -7,16 +7,13 @@ COMMON_FLAGS = -O2 -fPIC -I$(LUA_DIR)
 3RDPATH = ../3rd
 3RDFLAG = -I$(3RDPATH) -L$(3RDPATH)
 
-all : lfs.so lzstd.so lutil.so lkcp.so lleveldb.so
+all : lfs.so lzstd.so lutil.so lkcp.so
 
 lfs.so : lfs/lfs.c
 	$(CC) -o $@ $^ $(COMMON_FLAGS) $(DY_LIB)
 
 lzstd.so : lzstd/lzstd.c
 	$(CC) -o $@ $^ $(COMMON_FLAGS) $(DY_LIB) $(3RDFLAG) -lzstd
-
-lleveldb.so : leveldb/*.cc
-	$(CXX) -o $@ $^ $(COMMON_FLAGS) $(DY_LIB) $(CXXFLAGS) $(3RDFLAG) -lleveldb
 
 lutil.so : lutil/*.cc
 	$(CXX) -o $@ $^ $(COMMON_FLAGS) $(DY_LIB) $(CXXFLAGS)

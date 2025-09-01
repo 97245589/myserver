@@ -45,8 +45,8 @@ local stress = function()
     local bin = zstd.pack(arr)
     print(#bin, #skynet.packstring(arr))
 
-    local t = skynet.now()
     local test = function(idx, name)
+        local t = skynet.now()
         local n = 1000
         for i = 1, n do
             call("hmset", idx * n + i, "data", bin)
@@ -56,12 +56,6 @@ local stress = function()
 
     for i = 1, 5 do
         skynet.fork(test, i, "redis")
-    end
-    skynet.sleep(200)
-
-    call = require"common.tool.leveldb".call
-    for i = 1, 5 do
-        skynet.fork(test, i, "leveldb")
     end
 end
 
