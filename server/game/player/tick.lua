@@ -60,9 +60,8 @@ local tick_save = function()
 end
 
 skynet.fork(function()
-    local TICK_TIME = 100
     while true do
-        skynet.sleep(TICK_TIME)
+        skynet.sleep(100)
         local ok, ret = pcall(function()
             tick_save()
             mgrs.all_tick()

@@ -1,4 +1,6 @@
 local skynet = require "skynet"
+local SERVICE_NAME = SERVICE_NAME
+local date = os.date
 print = skynet.error
 local time = os.time
 local stime = skynet.time

@@ -77,4 +77,6 @@ M.clear = function()
     init_players = {}
 end
 
+M.data = {}
+
 return M
