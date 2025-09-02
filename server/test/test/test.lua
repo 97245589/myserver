@@ -109,10 +109,10 @@ end
 
 skynet.start(function()
     -- split_test()
-    -- zstd_test()
+    zstd_test()
     -- dir_require_test()
     -- crypt_test()
     -- gc_test()
-    print_test()
+    -- print_test()
     skynet.exit()
 end)

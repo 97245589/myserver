@@ -154,7 +154,7 @@ int Lkcp::lkcp_client(lua_State *L) {
   kuser->conv = conv;
   kuser->host = host;
 
-  ikcpcb *p = ikcp_create(1, kuser);
+  ikcpcb *p = ikcp_create(conv, kuser);
   p->output = cli_output;
   ikcp_nodelay(p, 2, 10, 2, 1);
   ikcpcb **pp = (ikcpcb **)lua_newuserdata(L, sizeof(p));
