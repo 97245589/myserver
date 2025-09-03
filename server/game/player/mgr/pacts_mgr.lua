@@ -22,45 +22,71 @@ local get_impl_func = function(actid, cbname)
     return func
 end
 
-local handle_opens = function(opens)
-    if not opens or not next(opens) then
+local handle_close = function(player, actid)
+    local pacts = player.activities
+    local pact = pacts[actid]
+    pacts[actid] = nil
+    if not pact or not pact.isopen then
+        return
+    end
+    local func = get_impl_func(actid, "close")
+    if func then
+        func(player, pact)
+    end
+end
+
+local handle_open = function(player, actid, starttm)
+    local act_open = function(pact)
+        pact.actid = actid
+        pact.isopen = true
+        pact.starttm = starttm
+        local func = get_impl_func(actid, "open")
+        if func then
+            func(player, pact)
+        end
+    end
+
+    local pacts = player.activities
+    pacts[actid] = pacts[actid] or {}
+    local pact = pacts[actid]
+
+    if pact.isopen and pact.starttm == starttm then
         return
     end
 
+    if not pact.isopen then
+        act_open(pact)
+        return
+    end
+
+    if pact.starttm ~= starttm then
+        local func = get_impl_func(actid, "close")
+        if func then
+            func(player, pact)
+        end
+        act_open(pact)
+    end
+end
+local handle_opens = function(opens)
     for _, actid in ipairs(opens) do
-        local func = get_impl_func(actid, "open")
-        if not func then
-            goto cont
-        end
+        local starttm = activities[actid].starttm
         for playerid, player in pairs(players) do
-            func(player)
+            handle_open(player, actid, starttm)
         end
-        ::cont::
     end
 end
 
 local handle_closes = function(closes)
-    if not closes or not next(closes) then
-        return
-    end
-
     for _, actid in ipairs(closes) do
-        local func = get_impl_func(actid, "close")
-        if not func then
-            goto cont
-        end
         for playerid, player in pairs(players) do
-            func(player)
+            handle_close(player, actid)
         end
-        ::cont::
     end
 end
 
 M.activities_info = function(info, opens, closes)
     data.activities = info
     activities = info
-    -- print("recv activities info", dump(info))
-    -- print("activities open", opens and dump(opens))
 
     if opens then
         handle_opens(opens)
@@ -68,47 +94,31 @@ M.activities_info = function(info, opens, closes)
     if closes then
         handle_closes(closes)
     end
-end
 
-M.isopen = function(actid)
-    local act = activities[actid]
-    if not act then
-        return
+    --[[
+    print("recv activities info", dump(info))
+    if opens then
+        print("activities open", dump(opens))
     end
-    return act.isopen
+    if closes then
+        print("activities close", dump(closes))
+    end
+    ]]
+
 end
 
-M.check = function(player, actid, obj)
-    if not M.isopen(actid) then
-        if obj.isopen then
-            local func = get_impl_func(actid, "close")
-            if func then
-                func(player)
-            end
-            return
+M.check_activities = function(player)
+    for actid, act in pairs(activities) do
+        if M.isopen(actid) then
+            handle_open(player, actid, act.starttm)
+        else
+            handle_close(player, actid)
         end
-    else
-        local act = activities[actid]
-        if not obj.isopen then
-            obj.isopen = true
-            obj.starttm = act.starttm
-            local func = get_impl_func(actid, "open")
-            if func then
-                func(player)
-            end
-            return
-        end
-        if obj.isopen and obj.starttm ~= act.starttm then
-            local closefunc = get_impl_func(actid, "close")
-            if closefunc then
-                closefunc(player)
-            end
-            obj.isopen = true
-            obj.starttm = act.starttm
-            local openfunc = get_impl_func(actid, "open")
-            if openfunc then
-                openfunc(player)
-            end
+    end
+
+    for actid, pact in pairs(player.activities) do
+        if not activities[actid] then
+            handle_close(player, actid)
         end
     end
 end

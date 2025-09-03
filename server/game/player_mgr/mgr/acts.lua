@@ -1,16 +1,14 @@
-local print, dump, require = print, tdump, require
+local print, dump, require, string = print, tdump, require, string
 local acts_mgr = require "server.game.player_mgr.mgr.acts_mgr"
-local impls = acts_mgr.impls
+local format = string.format
 
+local impls = acts_mgr.impls
 impls[10] = {
-    create = function(act)
-        -- print("act 10 create")
+    open = function(actid)
+        print(format("act %s open", actid))
     end,
-    open = function(act)
-        -- print("act 10 start")
-    end,
-    close = function(act)
-        -- print("act 10 closed")
+    close = function(actid)
+        print(format("act %s close", actid))
     end
 }
 

@@ -1,4 +1,4 @@
-local require, print, dump = require, print, dump
+local require, os, print, dump = require, os, print, dump
 local zstd = require "common.tool.zstd"
 local mgrs = require "server.game.player_mgr.mgrs"
 local time = require "common.func.time"
@@ -9,7 +9,7 @@ local M = {
 
 M.get_dbdata = function()
     local dbdata = {}
-    dbdata.startday = dbdata.startday or time.day_start()
+    dbdata.startday = dbdata.startday or os.time()
     time.set_server_start_ts(dbdata.startday)
 
     M.data = dbdata

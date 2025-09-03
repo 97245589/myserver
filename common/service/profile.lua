@@ -2,7 +2,7 @@ local print, dump, table, pairs = print, dump, table, pairs
 local SERVICE_NAME = SERVICE_NAME
 local skynet = require "skynet"
 
-local PRINT_PROFILE = 100 * 30
+local PRINT_PROFILE = 100 * 300
 
 local data = {}
 

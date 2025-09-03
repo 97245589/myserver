@@ -149,6 +149,26 @@ M.start_end = function(cfg, nowts)
     end
 end
 
+M.start_end_by_lastend = function(cfg, endts, nowts)
+    nowts = nowts or os.time()
+    if cfg.everyweek then
+        return parse_every_week(cfg, nowts)
+    end
+    if not cfg.duration or not cfg.next then
+        return
+    end
+    while true do
+        local startts = M.add_duration(endts, cfg.next)
+        endts = M.add_duration(startts, cfg.duration)
+        if nowts < startts then
+            return startts, endts
+        end
+        if nowts >= startts and nowts < endts then
+            return startts, endts
+        end
+    end
+end
+
 M.format = function(ts)
     return os.date("%Y-%m-%d %H:%M:%S", ts)
 end

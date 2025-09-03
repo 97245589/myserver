@@ -30,32 +30,31 @@ M.exec_act_cb = function(id, cbname, ...)
     return func(...)
 end
 
+M.get_activities = function()
+    return activities
+end
+
 M.new_act = function(actid, starttm, endtm)
-    local obj = {
+    return {
         actid = actid,
         starttm = starttm,
         endtm = endtm,
         isopen = false
     }
-    M.exec_act_cb(actid, "create", obj, M)
-    return obj
-end
-
-M.get_activities = function()
-    return activities
 end
 
 local tick_mark = false
 M.load_activities = function()
     for actid, actcfg in pairs(act_cfgs) do
+        local act = activities[actid]
+        if act then
+            goto cont
+        end
         local cstarttm, cendtm = time.start_end(actcfg)
         if not cstarttm then
             goto cont
         end
-        local act = activities[actid]
-        if not act then
-            activities[actid] = M.new_act(actid, cstarttm, cendtm)
-        end
+        activities[actid] = M.new_act(actid, cstarttm, cendtm)
         ::cont::
     end
     common.send_all_player_service("activities_info", activities)
@@ -72,29 +71,30 @@ M.tick = function()
     local tm = os.time()
     for actid, act in pairs(activities) do
         -- print("actid", actid, time.format(act.starttm), time.format(act.endtm))
-        if tm >= act.starttm then
-            if not act.isopen then
-                act.isopen = true
-                M.exec_act_cb(actid, "open", act)
-                table.insert(opens, actid)
-                goto cont
-            end
-        end
         if act.endtm and tm >= act.endtm then
-            act.isopen = false
-            M.exec_act_cb(actid, "close", act)
             activities[actid] = nil
+            M.exec_act_cb(actid, "close", actid)
             table.insert(closes, actid)
 
             local actcfg = act_cfgs[actid]
             if not actcfg then
                 goto cont
             end
-            local cstarttm, cendtm = time.start_end(actcfg)
+            local cstarttm, cendtm = time.start_end_by_lastend(actcfg, act.endtm)
             if not cstarttm then
                 goto cont
             end
             activities[actid] = M.new_act(actid, cstarttm, cendtm)
+            goto cont
+        end
+
+        if tm >= act.starttm then
+            if not act.isopen then
+                act.isopen = true
+                M.exec_act_cb(actid, "open", actid)
+                table.insert(opens, actid)
+                goto cont
+            end
         end
         ::cont::
     end

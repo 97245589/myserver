@@ -5,10 +5,10 @@ return {
             sec = 10
         },
         duration = {
-            day = 2
+            sec = 10
         },
         next = {
-            day = 3
+            sec = 10
         }
     }
 }

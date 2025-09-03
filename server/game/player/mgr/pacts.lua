@@ -1,5 +1,5 @@
-local print = print
 local require = require
+local print = print
 local pacts_mgr = require "server.game.player.mgr.pacts_mgr"
 local mgrs = require "server.game.player.mgrs"
 local impls = pacts_mgr.impls
@@ -7,22 +7,18 @@ local impls = pacts_mgr.impls
 local M = {}
 
 M.init_player = function(player)
-    player.act10 = player.act10 or {}
-    pacts_mgr.check(player, 10, player.act10)
+    player.activities = player.activities or {}
+    player.activities_data = player.activities_data or {}
 
-    player.act11 = player.act11 or {}
-    pacts_mgr.check(player, 11, player.act11)
+    pacts_mgr.check_activities(player)
 end
 
 impls[10] = {
-    open = function(player)
-        print("act10 is open")
-        local act10 = player.act10
+    open = function(player, pact)
     end,
-    close = function(player)
-        player.act10 = nil
+    close = function(player, pact)
     end
 }
 
-mgrs.add_mgr("pact10", M)
+mgrs.add_mgr("pacts", M)
 return M
