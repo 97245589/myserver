@@ -2,13 +2,13 @@ return {
     [10] = {
         id = 10,
         server_start = {
-            sec = 10
+            sec = 5
         },
         duration = {
-            sec = 10
+            sec = 5
         },
         next = {
-            sec = 10
+            sec = 5
         }
     }
 }

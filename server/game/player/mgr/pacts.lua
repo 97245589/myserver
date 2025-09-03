@@ -1,5 +1,5 @@
 local require = require
-local print = print
+local print, dump = print, tdump
 local pacts_mgr = require "server.game.player.mgr.pacts_mgr"
 local mgrs = require "server.game.player.mgrs"
 local impls = pacts_mgr.impls
@@ -15,8 +15,10 @@ end
 
 impls[10] = {
     open = function(player, pact)
+        print("player act open", dump(pact))
     end,
     close = function(player, pact)
+        print("player act close", dump(pact))
     end
 }
 

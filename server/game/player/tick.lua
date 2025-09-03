@@ -12,7 +12,7 @@ local kick_player = client_req.kick_player
 local players = require "server.game.player.players"
 local players = players.players
 
-local OFFLINE_TM = 10 * 100
+local OFFLINE_TM = 100 * 300
 local TICK_SAVE_NUM = 5
 
 local gen_ids = function(ids, obj)
