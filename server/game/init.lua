@@ -13,19 +13,17 @@ local services = {}
 local cmds = {}
 
 local init_services = function()
-    local addr
-
-    addr = skynet.newservice("server/game/player_mgr/start", "player_mgr")
-    services.player_mgr = addr
-
     for i = 1, gamecommon.player_service_num do
         local service_name = "player" .. i
-        addr = skynet.newservice("server/game/player/start", service_name, 1)
+        local addr = skynet.newservice("server/game/player/start", service_name, 1)
         services[service_name] = addr
     end
 
+    local addr = skynet.newservice("server/game/player_mgr/start", "player_mgr", 1)
+    services.player_mgr = addr
+
     skynet.newservice("server/game/watchdog/start", "watchdog")
-    addr = skynet.newservice("server/game/verify/start", "verify")
+    skynet.newservice("server/game/verify/start", "verify")
 
     if not skynet.getenv("local_server") then
         skynet.newservice("server/game/cluster/start", "cluser")

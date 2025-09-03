@@ -3,7 +3,9 @@ local zstd = require "common.tool.zstd"
 local mgrs = require "server.game.player_mgr.mgrs"
 local time = require "common.func.time"
 
-local M = {}
+local M = {
+    data = nil
+}
 
 M.get_dbdata = function()
     local dbdata = {}

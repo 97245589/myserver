@@ -17,7 +17,7 @@ local print, type, setmetatable, getmetatable = print, type, setmetatable, getme
 local table, pairs, ipairs, tconcat, tinsert, next = table, pairs, ipairs, table.concat, table.insert, next
 local string, tostring, srep = string, tostring, string.rep
 
-local tdump = function(root)
+local sdump = function(root)
     local cache = {
         [root] = "."
     }
@@ -40,8 +40,9 @@ local tdump = function(root)
     local str = "\n" .. _dump(root, "", "")
     return str
 end
+tdump = sdump
 print_r = function(v)
-    print(tdump(v))
+    print(sdump(v))
 end
 
 local odump = function(v, max_depth)
