@@ -7,7 +7,7 @@ local timefunc = require "common.func.timefunc"
 local phandle = timefunc.player()
 
 local data = mgrs.data
-local activities = data.activities
+local acts_tm = data.acts_tm
 
 local M = {
     impls = {}
@@ -22,33 +22,31 @@ local cb = function(id, tp, player, pobj)
     if not func then
         return
     end
-    func(player, pobj)
+    func(player, pobj.id)
 end
 
-M.activities_info = function(info, opens, closes)
+M.acts_tm = function(info, opens, closes)
     data.activities = info
-    activities = info
+    acts_tm = info
 
     if opens then
-        phandle.handle_opens(players, "activities", opens, activities, cb)
+        phandle.handle_opens(players, "acts_tm", opens, acts_tm, cb)
     end
     if closes then
-        phandle.handle_closes(players, "activities", closes, activities, cb)
+        phandle.handle_closes(players, "acts_tm", closes, acts_tm, cb)
     end
 
-    --[[
-    print("recv activities info", dump(info))
-    if opens then
-        print("activities open", dump(opens))
-    end
-    if closes then
-        print("activities close", dump(closes))
-    end
-    ]]
+    -- print("recv acts_tm info", dump(info))
+    -- if opens then
+    --     print("acts_tm open", dump(opens))
+    -- end
+    -- if closes then
+    --     print("acts_tm close", dump(closes))
+    -- end
 end
 
-M.check_activities = function(player)
-    phandle.check(player, player.activities, activities, cb)
+M.check_acts_tm = function(player)
+    phandle.check(player, player.acts_tm, acts_tm, cb)
 end
 
 return M

@@ -7,8 +7,8 @@ local mgrs = require "server.game.player_mgr.mgrs"
 local timefunc = require "common.func.timefunc"
 
 local dbdata = mgrs.dbdata
-dbdata.activities = dbdata.activities or {}
-local activities = dbdata.activities
+dbdata.acts_tm = dbdata.acts_tm or {}
+local acts_tm = dbdata.acts_tm
 
 local act_cfgs = config("act_test")
 
@@ -42,8 +42,8 @@ local tick_mark = false
 local ctr = timefunc.control()
 
 skynet.timeout(100, function()
-    ctr.load(act_cfgs, activities)
-    common.send_all_player_service("activities_info", activities)
+    ctr.load(act_cfgs, acts_tm)
+    common.send_all_player_service("acts_tm", acts_tm)
     tick_mark = true
 end)
 
@@ -51,11 +51,11 @@ M.tick = function()
     if not tick_mark then
         return
     end
-    local opens, closes = ctr.tick(act_cfgs, activities)
+    local opens, closes = ctr.tick(act_cfgs, acts_tm)
     handle_opens_closes(opens, closes)
 
     if opens or closes then
-        common.send_all_player_service("activities_info", activities, opens, closes)
+        common.send_all_player_service("acts_tm", acts_tm, opens, closes)
     end
 end
 

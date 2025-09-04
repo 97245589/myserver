@@ -1,24 +1,22 @@
 local require = require
 local print, dump = print, tdump
-local pacts_mgr = require "server.game.player.mgr.pacts_mgr"
+local pacts_tm = require "server.game.player.mgr.pacts_tm"
 local mgrs = require "server.game.player.mgrs"
-local impls = pacts_mgr.impls
+local impls = pacts_tm.impls
 
 local M = {}
 
 M.init_player = function(player)
-    player.activities = player.activities or {}
-    player.activities_data = player.activities_data or {}
-
-    pacts_mgr.check_activities(player)
+    player.acts_tm = player.acts_tm or {}
+    pacts_tm.check_acts_tm(player)
 end
 
 impls[10] = {
-    open = function(player, pact)
-        -- print("player act open", dump(pact))
+    open = function(player, actid)
+        print("player act open", actid)
     end,
-    close = function(player, pact)
-        -- print("player act close", dump(pact))
+    close = function(player, actid)
+        print("player act close", actid)
     end
 }
 
