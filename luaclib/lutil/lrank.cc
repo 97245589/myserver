@@ -87,9 +87,10 @@ void Lrank::lrank_meta(lua_State *L) {
 }
 
 int Lrank::create_lrank(lua_State *L) {
-  int max_num = lua_tointeger(L, 1);
+  int max_num = luaL_checkinteger(L,1);
+  if (max_num <= 0) return luaL_error(L, "create rank num err");
   Rank *p = new Rank();
-  if (max_num > 0) p->max_num_ = max_num;
+  p->max_num_ = max_num;
   Rank **pp = (Rank **)lua_newuserdata(L, sizeof(p));
   *pp = p;
   lrank_meta(L);

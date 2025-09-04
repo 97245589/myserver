@@ -3,19 +3,28 @@ local require, math, tostring = require, math, tostring
 local print, print_v, dump = print, print_v, dump
 local skynet = require "skynet"
 local format = string.format
+local random = math.random
 
-local ranktest = function()
-    print("ranttest ===========")
+local ranksimple = function()
+    local rank_tool = require "common.func.rank"
 
-    local rank_mgr = require "common.func.rank"
-    local random = math.random
+    local rank = rank_tool.new_rank(100)
+    rank.add(1, 10)
+    rank.add(2, 5)
+    rank.add(3, 7)
+    print(dump(rank.rankinfo()))
 
-    local rank = rank_mgr.new_rank(10)
+    local rank = rank_tool.new_rank(10)
     for i = 1, 1000 do
-        rank.add(tostring(random(20)), random(10), i)
+        rank.add(tostring(random(100)), random(10), i)
     end
     print("dump info", rank.dump())
     print("get rank info", dump(rank.rankinfo(3)), dump(rank.rankinfo()))
+end
+
+local ranktest = function()
+    print("rank stress test ===========")
+    local rank_mgr = require "common.func.rank"
 
     local t = skynet.now()
     local trank = rank_mgr.new_rank(1000)
@@ -53,6 +62,7 @@ local lrutest = function()
 end
 
 skynet.start(function()
-    lrutest()
+    ranksimple()
     ranktest()
+    -- lrutest()
 end)
