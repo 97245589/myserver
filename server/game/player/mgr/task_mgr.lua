@@ -10,7 +10,7 @@ local enums = {
 }
 
 local handle = {
-    [enums.player_level] = function(player, tevent)
+    [enums.player_level] = function(player, tevent, task)
         return player.level
     end
 }
@@ -20,85 +20,82 @@ local M = {
     task_mgrs = {}
 }
 
-local gen_event_mark = function(event_arr)
-    return table.concat(event_arr, "|", 1, #event_arr - 1)
-end
-
-local task_count = function(player, task, tevent, add_num)
+local count_task = function(player, task, tevent, add_num)
+    local change
     local ep1 = tevent[1]
     if handle[ep1] then
-        task.num = handle[ep1](player, tevent) or 0
+        local bnum = task.num
+        task.num = handle[ep1](player, tevent, task) or 0
+        if bnum ~= task.num then
+            change = true
+        end
     else
         task.num = task.num + add_num
+        if add_num ~= 0 then
+            change = true
+        end
     end
 
     local num = tevent[#tevent]
     if task.num >= num then
         task.num = num
         task.status = enums.finish
-        return true
     end
-end
-
-local add_event_mark = function(marks, event_mark, taskid)
-    marks[event_mark] = marks[event_mark] or {}
-    marks[event_mark][taskid] = 1
-end
-
-local remove_event_mark = function(marks, event_mark, taskid)
-    marks[event_mark][taskid] = nil
-    if not next(marks[event_mark]) then
-        marks[event_mark] = nil
-    end
-end
-
-local init_one_task = function(player, task_obj, taskid, tevent)
-    local tasks = task_obj.tasks
-    if tasks[taskid] then
-        return
-    end
-    local task = {
-        id = taskid,
-        num = 0,
-        status = enums.unfinish
-    }
-    task_count(player, task, tevent, 0)
-
-    if task.status == enums.unfinish then
-        local event_mark = gen_event_mark(tevent)
-        add_event_mark(task_obj.marks, event_mark, taskid)
-    end
-    tasks[taskid] = task
+    return change
 end
 
 M.init_task = function(player, task_obj, task_cfg)
     task_obj.marks = task_obj.marks or {}
     task_obj.tasks = task_obj.tasks or {}
 
+    local tasks = task_obj.tasks
+    local marks = task_obj.marks
     for taskid, tcfg in pairs(task_cfg) do
-        init_one_task(player, task_obj, taskid, tcfg.event)
+        local tevent = tcfg.event
+        if tasks[taskid] then
+            goto cont
+        end
+        local task = {
+            id = taskid,
+            num = 0,
+            status = enums.unfinish
+        }
+        count_task(player, task, tevent, 0)
+        if task.status == enums.unfinish then
+            local emark = tevent[1]
+            marks[emark] = marks[emark] or {}
+            marks[emark][taskid] = 1
+        end
+        tasks[taskid] = task
+        ::cont::
     end
 end
 
 M.count_task = function(player, task_obj, task_cfg, event)
-    local event_mark = gen_event_mark(event)
-    local taskids = task_obj.marks[event_mark]
+    local emark = event[1]
+    local marks = task_obj.marks
+    local taskids = marks[emark]
     if not taskids or not next(taskids) then
         return
     end
 
-    local t = {}
+    local arr = {}
     local add_num = event[#event]
     for taskid, _ in pairs(taskids) do
         local tevent = task_cfg[taskid].event
         local task = task_obj.tasks[taskid]
-        task_count(player, task, tevent, add_num)
-        if task.status ~= enums.unfinish then
-            remove_event_mark(task_obj.marks, event_mark, task.id)
+        local change = count_task(player, task, tevent, add_num)
+        if change then
+            table.insert(arr, taskid)
         end
-        table.insert(t, taskid)
+        if task.status ~= enums.unfinish then
+            marks[emark][taskid] = nil
+            if not next(marks[emark]) then
+                marks[emark] = nil
+            end
+        end
     end
-    return next(t) and t
+    return next(arr) and arr
 end
 
 M.trigger_event = function(player, pevent)
