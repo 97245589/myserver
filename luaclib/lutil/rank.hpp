@@ -38,7 +38,6 @@ struct Rank {
   void add(const Rank_base &);
   void evict();
   string dump();
-  Rank() : max_num_(999) {}
 };
 
 void Rank::evict() {
