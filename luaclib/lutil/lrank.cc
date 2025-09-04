@@ -3,6 +3,9 @@ extern "C" {
 #include "lua.h"
 }
 
+#include <iostream>
+using namespace std;
+
 #include "rank.hpp"
 
 static const char *LRANK_META = "LRANK_META";
@@ -25,6 +28,7 @@ int Lrank::arr_info(lua_State *L) {
     num = rank.max_num_;
   }
   auto &ranks = rank.ranks_;
+  if (ranks.size() == 0) return 0;
 
   int c = 0;
   lua_createtable(L, num * 3, 0);
@@ -36,10 +40,10 @@ int Lrank::arr_info(lua_State *L) {
     lua_pushinteger(L, data.time_);
     lua_rawseti(L, -2, ++c);
     if (c >= 3 * num) {
-      return 1;
+      break;
     }
   }
-  return 0;
+  return 1;
 }
 
 int Lrank::add(lua_State *L) {
