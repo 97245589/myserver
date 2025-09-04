@@ -55,7 +55,7 @@ M.player_enter = function(playerid, fd, gate, acc)
     playerid_fd[playerid] = fd
     local player = players.get_player(playerid)
     player.acc = acc
-    print(format("playerenter fd:%s playerid: %s", fd, playerid), player)
+    -- print(format("playerenter fd:%s playerid: %s", fd, playerid), player)
 end
 
 M.push = function(playerid, name, args)

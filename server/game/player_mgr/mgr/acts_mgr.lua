@@ -25,23 +25,16 @@ local exec_cb = function(id, tp)
     func(id)
 end
 
-local handle_opens = function(opens)
-    if not opens then
-        return
+local handle_opens_closes = function(opens, closes)
+    if opens then
+        for _, id in ipairs(opens) do
+            exec_cb(id, "open")
+        end
     end
-
-    for _, id in ipairs(opens) do
-        exec_cb(id, "open")
-    end
-end
-
-local handle_closes = function(closes)
-    if not closes then
-        return
-    end
-
-    for _, id in ipairs(closes) do
-        exec_cb(id, "close")
+    if closes then
+        for _, id in ipairs(closes) do
+            exec_cb(id, "close")
+        end
     end
 end
 
@@ -59,8 +52,7 @@ M.tick = function()
         return
     end
     local opens, closes = ctr.tick(act_cfgs, activities)
-    handle_opens(opens)
-    handle_closes(closes)
+    handle_opens_closes(opens, closes)
 
     if opens or closes then
         common.send_all_player_service("activities_info", activities, opens, closes)

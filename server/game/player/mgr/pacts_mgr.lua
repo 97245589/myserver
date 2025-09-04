@@ -48,7 +48,6 @@ M.activities_info = function(info, opens, closes)
 end
 
 M.check_activities = function(player)
-    print("=== check activities ====")
     phandle.check(player, player.activities, activities, cb)
 end
 

@@ -15,10 +15,10 @@ end
 
 impls[10] = {
     open = function(player, pact)
-        print("player act open", dump(pact))
+        -- print("player act open", dump(pact))
     end,
     close = function(player, pact)
-        print("player act close", dump(pact))
+        -- print("player act close", dump(pact))
     end
 }
 
