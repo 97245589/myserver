@@ -1,15 +1,19 @@
 THREAD_NUM = 16
 
 SKYNET = skynet/skynet
-LUACLIB = luaclib/lfs.so
+LUACLIB = luaclib/lkcp.so
+MAP = map.so
 
-all : $(SKYNET) $(LUACLIB) 
+all : $(SKYNET) $(LUACLIB) $(MAP)
 
 $(SKYNET):
 	git submodule update --init &&  make linux -j$(THREAD_NUM) -Cskynet
 
 $(LUACLIB):
 	make -j$(THREAD_NUM) -Cluaclib
+
+$(MAP):
+	make -j$(THREAD_NUM) -Cmap
 	
 cleanskynet:
 	make cleanall -Cskynet
@@ -17,6 +21,9 @@ cleanskynet:
 cleanluaclib:
 	make clean -Cluaclib
 
-clean: cleanluaclib
+cleanmap:
+	make clean -Cmap
 
-cleanall: cleanskynet cleanluaclib 
+clean: cleanluaclib cleanmap
+
+cleanall: cleanskynet cleanluaclib cleanmap

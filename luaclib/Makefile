@@ -1,14 +1,14 @@
 CC = gcc
 CXX = g++
 CXXFLAGS = -std=c++17
-COMMON_FLAGS = -O2 -fPIC -shared -I$(LUA_DIR)
 
 LUA_DIR = ../skynet/3rd/lua
 SKYNET_DIR = ../skynet/skynet-src
 3RDPATH = ../3rd
 3RDFLAG = -I$(3RDPATH) -L$(3RDPATH)
+COMMON_FLAGS = -O2 -fPIC -shared -I$(LUA_DIR)
 
-all : lfs.so lzstd.so lutil.so lkcp.so lworld.so
+all : lfs.so lzstd.so lutil.so lkcp.so
 
 lfs.so : lfs/lfs.c
 	$(CC) -o $@ $^ $(COMMON_FLAGS) 
@@ -21,9 +21,6 @@ lutil.so : lutil/*.cc
 
 lkcp.so: kcp/*.c kcp/*.cc
 	$(CXX) -o $@ $^ $(COMMON_FLAGS) $(CXXFLAGS) -I$(SKYNET_DIR)
-
-lworld.so: world/*.cc
-	$(CXX) -o $@ $^ $(COMMON_FLAGS) $(CXXFLAGS) -w
 
 .PHONY : clean
 clean:

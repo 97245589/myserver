@@ -110,7 +110,6 @@ local test = function()
         print(dump(tp_ranks))
     end)
 end
-test()
 
 mgrs.add("ranks", M)
 return M
