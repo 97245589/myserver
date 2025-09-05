@@ -1,9 +1,8 @@
-local require, print, dump = require, print, dump
+local require, print, dump, os = require, print, dump, os
 local table, pairs, next = table, pairs, next
 local skynet = require "skynet"
-local rank = require "common.func.rank"
 local mgrs = require "server.game.player_mgr.mgrs"
-local rank_tool = require "common.func.rank"
+local lrank = require "lutil.lrank"
 
 local dbdata = mgrs.dbdata
 dbdata.ranks = dbdata.ranks or {}
@@ -14,33 +13,42 @@ local tp_ranks = {}
 local M = {}
 
 M.init = function(dbranks)
-
+    for rankid, rank in pairs(dbranks) do
+        local core = M.add_type_rank(rankid, rank.tp, rank.num)
+        local rinfo = rank.info
+        for i = 1, #rinfo, 3 do
+            core:add(rinfo[i], rinfo[i + 1], rinfo[i + 2])
+        end
+    end
 end
 
 M.tick = function()
     for rankid, core in pairs(tick_info) do
         local rank = dbranks[rankid]
-        rank.info = core.rankinfo()
+        rank.info = core:arr_info()
     end
     tick_info = {}
 end
 
-M.create = function(rankid, tp)
+M.add_type_rank = function(rankid, tp, num)
+    local core = lrank.create_lrank(num)
+    tp_ranks[tp] = tp_ranks[tp] or {}
+    tp_ranks[tp][rankid] = core
+    return core
+end
+
+M.create_rank = function(rankid, tp, num)
     dbranks[rankid] = dbranks[rankid] or {
         id = rankid,
         tp = tp,
+        num = num,
         info = nil
     }
 
-    local core = rank_tool.new_rank(1000)
-    tp_ranks[tp] = tp_ranks[tp] or {}
-    tp_ranks[tp][rankid] = {
-        id = rankid,
-        core = core
-    }
+    M.add_type_rank(rankid, tp, num)
 end
 
-M.del = function(rankid)
+M.del_rank = function(rankid)
     local rank = dbranks[rankid]
     if not rank then
         return
@@ -54,21 +62,20 @@ M.del = function(rankid)
     end
 end
 
-M.add = function(tp, id, score)
+M.add_score = function(tp, id, score)
     local tpranks = tp_ranks[tp]
     if not tpranks then
         print("rank add err no tp", tp, id, score)
         return
     end
 
-    for rankid, tprank in pairs(tpranks) do
-        local core = tprank.core
-        core.add(id, score)
+    for rankid, core in pairs(tpranks) do
+        core:add(id, score, os.time())
         tick_info[rankid] = core
     end
 end
 
-M.get_info = function(rankid, num, id)
+M.get_info = function(rankid, id, num)
     local rank = dbranks[rankid]
     if not rank or not rank.info then
         return

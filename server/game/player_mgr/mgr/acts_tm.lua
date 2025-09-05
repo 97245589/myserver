@@ -41,6 +41,10 @@ end
 local ctr = timefunc.control()
 ctr.load(act_cfgs, acts_tm)
 
+M.start_timeout = function()
+    common.send_all_player_service("acts_tm_notify", acts_tm)
+end
+
 M.get_acts_tm = function()
     return acts_tm
 end

@@ -3,8 +3,10 @@ local next, ipairs, pairs = next, ipairs, pairs
 local players = require"server.game.player.players".players
 local timefunc = require "common.func.timefunc"
 local skynet = require "skynet"
+local mgrs = require "server.game.player.mgrs"
 
-local acts_tm = skynet.call("player_mgr", "lua", "get_acts_tm")
+local data = mgrs.data
+local acts_tm = data.acts_tm
 
 local phandle = timefunc.player()
 
@@ -25,6 +27,7 @@ local cb = function(id, tp, player, pobj)
 end
 
 M.acts_tm_notify = function(info, opens, closes)
+    data.acts_tm = info
     acts_tm = info
 
     if opens then

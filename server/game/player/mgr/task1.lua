@@ -12,7 +12,7 @@ M.after_init_player = function(player)
     player.task1 = player.task1 or {}
     local task1 = player.task1
     task_mgr.init_task(player, task1, task_cfg)
-    print("=== after init player", dump(task1))
+    -- print("=== after init player", dump(task1))
 end
 
 M.trigger_event = function(player, pevent)
