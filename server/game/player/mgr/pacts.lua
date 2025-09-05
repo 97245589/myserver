@@ -13,10 +13,10 @@ end
 
 impls[10] = {
     open = function(player, actid)
-        print("player act open", actid)
+        -- print("player act open", actid)
     end,
     close = function(player, actid)
-        print("player act close", actid)
+        -- print("player act close", actid)
     end
 }
 

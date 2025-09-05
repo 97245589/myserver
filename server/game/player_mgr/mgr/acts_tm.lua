@@ -38,24 +38,19 @@ local handle_opens_closes = function(opens, closes)
     end
 end
 
-local tick_mark = false
 local ctr = timefunc.control()
+ctr.load(act_cfgs, acts_tm)
 
-skynet.timeout(100, function()
-    ctr.load(act_cfgs, acts_tm)
-    common.send_all_player_service("acts_tm", acts_tm)
-    tick_mark = true
-end)
+M.get_acts_tm = function()
+    return acts_tm
+end
 
 M.tick = function()
-    if not tick_mark then
-        return
-    end
     local opens, closes = ctr.tick(act_cfgs, acts_tm)
     handle_opens_closes(opens, closes)
 
     if opens or closes then
-        common.send_all_player_service("acts_tm", acts_tm, opens, closes)
+        common.send_all_player_service("acts_tm_notify", acts_tm, opens, closes)
     end
 end
 

@@ -1,22 +1,14 @@
-local require = require
+local require, print = require, print
 local table, next, pairs = table, next, pairs
+local mgrs = require "server.game.player.mgrs"
+local enums = require "common.func.enums"
 
-local enums = {
-    unfinish = 1,
-    finish = 2,
-    reward = 3,
-
-    player_level = 1
-}
-
-local handle = {
-    [enums.player_level] = function(player, tevent, task)
-        return player.level
-    end
-}
+local handle
 
 local M = {
-    enums = enums,
+    set_handle = function(h)
+        handle = h
+    end,
     task_mgrs = {}
 }
 
@@ -58,10 +50,10 @@ M.init_task = function(player, task_obj, task_cfg)
         local task = {
             id = taskid,
             num = 0,
-            status = enums.unfinish
+            status = enums.task_unfinish
         }
         count_task(player, task, tevent, 0)
-        if task.status == enums.unfinish then
+        if task.status == enums.task_unfinish then
             local emark = tevent[1]
             marks[emark] = marks[emark] or {}
             marks[emark][taskid] = 1
@@ -81,19 +73,26 @@ M.count_task = function(player, task_obj, task_cfg, event)
 
     local arr = {}
     local add_num = event[#event]
+    local tasks = task_obj.tasks
     for taskid, _ in pairs(taskids) do
-        local tevent = task_cfg[taskid].event
-        local task = task_obj.tasks[taskid]
+        local cfg = task_cfg[taskid]
+        if not cfg then
+            print("count task error no cfg", taskid)
+            goto cont
+        end
+        local tevent = cfg.event
+        local task = tasks[taskid]
         local change = count_task(player, task, tevent, add_num)
         if change then
             table.insert(arr, taskid)
         end
-        if task.status ~= enums.unfinish then
+        if task.status ~= enums.task_unfinish then
             marks[emark][taskid] = nil
             if not next(marks[emark]) then
                 marks[emark] = nil
             end
         end
+        ::cont::
     end
     return next(arr) and arr
 end
@@ -111,4 +110,5 @@ M.del_taskmgr = function(name)
     M.task_mgrs[name] = nil
 end
 
+mgrs.add_mgr("task_mgr", M)
 return M

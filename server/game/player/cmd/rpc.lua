@@ -6,4 +6,4 @@ local pacts_tm = require "server.game.player.mgr.pacts_tm"
 
 cmds.player_enter = client_req.player_enter
 
-cmds.acts_tm = pacts_tm.acts_tm
+cmds.acts_tm_notify = pacts_tm.acts_tm_notify

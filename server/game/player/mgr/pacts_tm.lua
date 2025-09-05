@@ -1,13 +1,12 @@
 local require, print, dump, os = require, print, tdump, os
 local next, ipairs, pairs = next, ipairs, pairs
-local mgrs = require "server.game.player.mgrs"
 local players = require"server.game.player.players".players
 local timefunc = require "common.func.timefunc"
+local skynet = require "skynet"
+
+local acts_tm = skynet.call("player_mgr", "lua", "get_acts_tm")
 
 local phandle = timefunc.player()
-
-local data = mgrs.data
-local acts_tm = data.acts_tm
 
 local M = {
     impls = {}
@@ -25,8 +24,7 @@ local cb = function(id, tp, player, pobj)
     func(player, pobj.id)
 end
 
-M.acts_tm = function(info, opens, closes)
-    data.activities = info
+M.acts_tm_notify = function(info, opens, closes)
     acts_tm = info
 
     if opens then
@@ -36,13 +34,19 @@ M.acts_tm = function(info, opens, closes)
         phandle.handle_closes(players, "acts_tm", closes, acts_tm, cb)
     end
 
-    -- print("recv acts_tm info", dump(info))
-    -- if opens then
-    --     print("acts_tm open", dump(opens))
-    -- end
-    -- if closes then
-    --     print("acts_tm close", dump(closes))
-    -- end
+    --[[
+    print("recv acts_tm info", dump(info))
+    if opens then
+        print("acts_tm open", dump(opens))
+    end
+    if closes then
+        print("acts_tm close", dump(closes))
+    end
+    ]]
+end
+
+M.get_actstm = function()
+    return acts_tm
 end
 
 M.check_acts_tm = function(player)

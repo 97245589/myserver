@@ -32,13 +32,7 @@ local start_func = function(name)
         profile.start()
         local func = cmds[cmd]
         if func then
-            local ok, ret = pcall(func, ...)
-            if ok then
-                skynet.retpack(ret)
-            else
-                print("cmd err", cmd, ret)
-                skynet.response()(false)
-            end
+            skynet.retpack(func(...))
         else
             skynet.response()(false)
             print(SERVICE_NAME .. "command not found", cmd)
