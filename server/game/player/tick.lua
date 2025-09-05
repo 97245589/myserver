@@ -9,10 +9,9 @@ local profile_info = require "common.service.profile"
 
 local client_req = require "server.game.player.client_req"
 local kick_player = client_req.kick_player
-local players = require "server.game.player.players"
-local players = players.players
+local players = require"server.game.player.players".players
 
-local OFFLINE_TM = 10 * 100
+local OFFLINE_TM = 100 * 300
 local TICK_SAVE_NUM = 5
 
 local gen_ids = function(ids, obj)
@@ -60,9 +59,8 @@ local tick_save = function()
 end
 
 skynet.fork(function()
-    local TICK_TIME = 100
     while true do
-        skynet.sleep(TICK_TIME)
+        skynet.sleep(100)
         local ok, ret = pcall(function()
             tick_save()
             mgrs.all_tick()

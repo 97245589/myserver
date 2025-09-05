@@ -10,7 +10,6 @@ local get_player_from_db = function(playerid)
         return players[playerid]
     end
     mgrs.all_init_player(player)
-    player.playerid = playerid
     players[playerid] = player
     return player
 end
@@ -21,6 +20,7 @@ M.get_player = function(playerid)
     local player = players[playerid] or get_player_from_db(playerid)
 
     player.opttm = skynet.now()
+    player.playerid = playerid
     return player
 end
 
