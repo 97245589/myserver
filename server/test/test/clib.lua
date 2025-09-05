@@ -1,68 +1,84 @@
 require "common.tool.lua_tool"
 local require, math, tostring = require, math, tostring
-local print, print_v, dump = print, print_v, dump
+local collectgarbage = collectgarbage
+local print, dump = print, dump
 local skynet = require "skynet"
 local format = string.format
 local random = math.random
 
-local ranksimple = function()
-    local rank_tool = require "common.func.rank"
+local lru = function()
+    print("====== lru test")
+    local llru = require "lutil.lru"
 
-    local rank = rank_tool.new_rank(100)
-    rank.add(1, 10)
-    rank.add(2, 5)
-    rank.add(3, 7)
-    print(dump(rank.rankinfo()))
-
-    local rank = rank_tool.new_rank(10)
-    for i = 1, 1000 do
-        rank.add(tostring(random(100)), random(10), i)
+    local func = function()
+        local core = llru.create_lru(5)
+        local data = {}
+        for i = 1, 20 do
+            local updatekey = tostring(random(10))
+            print(updatekey)
+            data[updatekey] = 1
+            local evict = core:update(updatekey)
+            if evict then
+                data[evict] = nil
+            end
+        end
+        print("data", dump(data))
     end
-    print("dump info", rank.dump())
-    print("get rank info", dump(rank.rankinfo(3)), dump(rank.rankinfo()))
+
+    local stress = function()
+        local core = llru.create_lru(1000)
+        local n = 1000000
+        local t = skynet.now()
+        for i = 1, n do
+            local updatekey = tostring(random(2000))
+            core:update(updatekey)
+        end
+        print(format("lru %s update times cost %s", n, skynet.now() - t))
+    end
+
+    func()
+    stress()
+    collectgarbage("collect")
 end
 
-local ranktest = function()
-    print("rank stress test ===========")
-    local rank_mgr = require "common.func.rank"
+local rank = function()
+    print("=========== rank test")
+    local lrank = require "lutil.rank"
 
-    local t = skynet.now()
-    local trank = rank_mgr.new_rank(1000)
-    local n = 1e6
-    for i = 1, n do
-        trank.add(tostring(random(2000)), random(1000), i)
+    local func = function()
+        local core = lrank.create_rank(5)
+        for i = 1, 20 do
+            local id = tostring(random(10))
+            local score = random(100)
+            print(format("id: %s, score: %s", id, score))
+            core:add(id, score, i)
+        end
+        print("rank info:", dump(core:info()))
     end
-    print(format("rank insert %s times cost %s", n, skynet.now() - t))
-    t = skynet.now()
-    local ret
-    n = 1e4
-    for i = 1, n do
-        ret = trank.rankinfo(1000)
+
+    local stress = function()
+        local core = lrank.create_rank(1000)
+        local n = 1000000
+        local t = skynet.now()
+        for i = 1, n do
+            core:add(tostring(random(2000)), random(100000), i)
+        end
+        print(format("rank add %s times cost %s", n, skynet.now() - t))
+
+        local n = 10000
+        local t = skynet.now()
+        local ret
+        for i = 1, n do
+            ret = core:info()
+        end
+        print(format("rank info %s times cost %s", n, skynet.now() - t))
     end
-    print(format("rank getinfo %s times cost %s", n, skynet.now() - t), #ret)
-end
-
-local lrutest = function()
-    print("lrutest ===========")
-
-    local lru_mgr = require "common.func.lru"
-
-    local data = {}
-    local lru = lru_mgr.create_lru(10, function(id)
-        data[id] = nil
-    end)
-
-    for i = 1, 100 do
-        local id = tostring(math.random(20))
-        data[id] = 1
-        lru.update(id)
-    end
-    print(lru.dump())
-    print_v(data)
+    func()
+    stress()
+    collectgarbage("collect")
 end
 
 skynet.start(function()
-    ranksimple()
-    ranktest()
-    -- lrutest()
+    lru()
+    rank()
 end)
