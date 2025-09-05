@@ -1,11 +1,4 @@
-CC = gcc
-export CC
-CXX = g++
-export CXX
-CXXFLAGS = -std=c++17
-export CXXFLAGS
 THREAD_NUM = 16
-export THREAD_NUM
 
 SKYNET = skynet/skynet
 LUACLIB = luaclib/lfs.so

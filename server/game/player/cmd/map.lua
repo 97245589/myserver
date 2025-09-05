@@ -4,15 +4,14 @@ local cluster = require "skynet.cluster"
 local client_req = require "server.game.player.client_req"
 local req = client_req.client_req
 
-local Map = {
-    send = function(player, ...)
+local map_send = function(player)
+    
+end
 
-    end,
-    call = function(player, ...)
+local map_call = function(player)
 
-    end
-}
+end
 
 req.enter_world = function(player, args)
-    
+    map_call("enter_world", player, args)
 end
