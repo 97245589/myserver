@@ -5,7 +5,7 @@ local compress = zstd.zstd_compress;
 local decompress = zstd.zstd_decompress;
 
 local pack = function(val)
-    return compress(skynet.packstring(val))
+    return compress(skynet.packstring(val, 1))
 end
 
 local unpack = function(bin)
