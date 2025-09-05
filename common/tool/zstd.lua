@@ -1,8 +1,8 @@
 local skynet = require "skynet"
 local zstd = require "lzstd"
 
-local compress = zstd.zstd_compress;
-local decompress = zstd.zstd_decompress;
+local compress = zstd.zstd_compress
+local decompress = zstd.zstd_decompress
 
 local pack = function(val)
     return compress(skynet.packstring(val), 1)
