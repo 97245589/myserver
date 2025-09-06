@@ -194,7 +194,7 @@ M.troops_info = function(tm)
     -- print("=== troops_info", tm, dump(troops))
 end
 
-M.troop_watches = function()
+M.update_watch_troops = function()
     local compare = function(watchid, before, now)
         local notify = {}
         for twid in pairs(now) do
@@ -202,8 +202,7 @@ M.troop_watches = function()
                 before[twid] = nil
             else
                 notify.add = notify.add or {}
-                -- notify.add[twid] = troops[twid]
-                notify.add[twid] = 1
+                notify.add[twid] = troops[twid]
             end
         end
         for twid in pairs(before) do
@@ -215,7 +214,7 @@ M.troop_watches = function()
         end
     end
 
-    local infos = core:troop_watches()
+    local infos = core:watch_troops()
     if not infos then
         return
     end
@@ -233,7 +232,7 @@ M.tick = function(tm)
     tm = tm or M.tm()
     M.troops_move(tm)
     M.troops_info(tm)
-    M.troop_watches()
+    M.update_watch_troops()
 end
 
 return M

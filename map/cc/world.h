@@ -47,7 +47,7 @@ struct World {
   int16_t correct_y(int16_t y);
   bool check_pos(int16_t cx, int16_t cy, int16_t len);
 
-  void troop_watches(unordered_map<int32_t, vector<int32_t>> &ret);
+  void watch_troops(unordered_map<int32_t, vector<int32_t>> &ret);
   void search_watches(int16_t cx, int16_t cy, int16_t len,
                       vector<int32_t> &ids);
   void dump_watches();

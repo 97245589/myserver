@@ -23,7 +23,7 @@ struct Lworld {
   static int del_troop(lua_State *L);
   static int troops_move(lua_State *L);
   static int troops_info(lua_State *L);
-  static int troop_watches(lua_State *L);
+  static int watch_troops(lua_State *L);
   static int add_watch(lua_State *L);
   static int del_watch(lua_State *L);
 };
@@ -46,12 +46,12 @@ int Lworld::del_watch(lua_State *L) {
   world.del_watch(id);
 }
 
-int Lworld::troop_watches(lua_State *L) {
+int Lworld::watch_troops(lua_State *L) {
   World **pp = (World **)luaL_checkudata(L, 1, LWORLD_META);
   World &world = **pp;
 
   unordered_map<int32_t, vector<int32_t>> ret;
-  world.troop_watches(ret);
+  world.watch_troops(ret);
 
   if (ret.size() == 0) return 0;
   lua_createtable(L, 0, ret.size());
@@ -270,7 +270,7 @@ void Lworld::meta(lua_State *L) {
                     {"del_troop", del_troop},
                     {"troops_move", troops_move},
                     {"troops_info", troops_info},
-                    {"troop_watches", troop_watches},
+                    {"watch_troops", watch_troops},
                     {"add_watch", add_watch},
                     {"del_watch", del_watch},
                     {NULL, NULL}};

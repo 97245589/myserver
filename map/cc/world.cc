@@ -302,11 +302,11 @@ void World::search_watches(int16_t cx, int16_t cy, int16_t len,
   }
 }
 
-void World::troop_watches(unordered_map<int32_t, vector<int32_t>> &ret) {
+void World::watch_troops(unordered_map<int32_t, vector<int32_t>> &ret) {
   gen_troop_grids();
   vector<int16_t> dirs = {0,  0, -1, 1, -1, -1, 1, 1,  1,
                           -1, 0, 1,  0, -1, 1,  0, -1, 0};
-  int MAX = 500000;
+  int MAX = 300000;
   for (auto [watchid, wit] : watches_) {
     int PER_MAX = MAX / watches_.size();
     int16_t gcx = wit->cx_ / WATCH_LEN;
