@@ -32,13 +32,13 @@ struct Troop {
 
 struct World {
   int16_t len_, wid_;
-  vector<vector<uint32_t>> entities_;
+  vector<vector<int32_t>> entities_;
   unordered_map<int32_t, Troop> troops_;
 
   vector<vector<set<Watch>>> watch_grids_;
   unordered_map<int32_t, set<Watch>::iterator> watches_;
 
-  vector<vector<vector<uint32_t>>> troop_grids_;
+  vector<vector<vector<int32_t>>> troop_grids_;
 
   static const int16_t WATCH_LEN = 5;
 

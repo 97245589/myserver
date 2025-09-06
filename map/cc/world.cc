@@ -9,7 +9,7 @@ using namespace std;
 void World::init_world(int16_t len, int16_t wid) {
   len_ = len;
   wid_ = wid;
-  entities_ = vector<vector<uint32_t>>(len, vector<uint32_t>(wid));
+  entities_ = vector<vector<int32_t>>(len, vector<int32_t>(wid));
   watch_grids_ = vector<vector<set<Watch>>>(
       len / WATCH_LEN + 1, vector<set<Watch>>(wid / WATCH_LEN + 1));
 }
@@ -202,8 +202,8 @@ void World::gen_one_troop_grid(int32_t id, double sx, double sy, double ex,
 }
 
 void World::gen_troop_grids() {
-  troop_grids_ = vector<vector<vector<uint32_t>>>(
-      len_ / WATCH_LEN + 1, vector<vector<uint32_t>>(wid_ / WATCH_LEN + 1));
+  troop_grids_ = vector<vector<vector<int32_t>>>(
+      len_ / WATCH_LEN + 1, vector<vector<int32_t>>(wid_ / WATCH_LEN + 1));
 
   for (auto &[id, troop] : troops_) {
     int PERMAX = 200000 / troops_.size();
