@@ -306,7 +306,7 @@ void World::troop_watches(unordered_map<int32_t, vector<int32_t>> &ret) {
   gen_troop_grids();
   vector<int16_t> dirs = {0,  0, -1, 1, -1, -1, 1, 1,  1,
                           -1, 0, 1,  0, -1, 1,  0, -1, 0};
-  int MAX = 300000;
+  int MAX = 500000;
   for (auto [watchid, wit] : watches_) {
     int PER_MAX = MAX / watches_.size();
     int16_t gcx = wit->cx_ / WATCH_LEN;
@@ -318,15 +318,14 @@ void World::troop_watches(unordered_map<int32_t, vector<int32_t>> &ret) {
       if (gx < 0 || gx >= troop_grids_.size()) continue;
       if (gy < 0 || gy >= troop_grids_[gx].size()) continue;
 
-      auto &set_ = ret[watchid];
+      auto &vec_ = ret[watchid];
       auto &troop_grid = troop_grids_[gx][gy];
       for (auto troopid : troop_grid) {
-        set_.push_back(troopid);
-        if (set_.size() >= PER_MAX) break;
+        vec_.push_back(troopid);
+        if (vec_.size() >= PER_MAX) break;
       }
-      if (set_.size() >= PER_MAX) break;
+      if (vec_.size() >= PER_MAX) break;
     }
-    if (ret[watchid].size() == 0) ret.erase(watchid);
   }
 }
 

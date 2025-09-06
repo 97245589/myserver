@@ -11,10 +11,8 @@ local handle = {
     entitydel = function(watchids, entity)
         print("entitydel", dump(watchids), dump(entity))
     end,
-    troopupdate = function(obj)
-        print("troopupdate", dump(obj))
-        for watchid, info in pairs(obj) do
-        end
+    troopupdate = function(watchid, obj)
+        -- print("troopupdate", watchid, dump(obj))
     end
 }
 world.notify_watches = function(cmd, ...)
@@ -29,11 +27,23 @@ world.troop_arrive = function(troop)
 end
 
 local test_troop_watch = function()
-    for i = 1, 10 do
+    --[[
+    for i = 1, 3 do
         world.add_watch(i, 1, 500, 500)
     end
 
     for i = 1, 10 do
+        local troop = {
+            type = "test"
+        }
+        world.add_troop(5, {480, 480, 500, 500}, troop)
+    end
+    ]]
+
+    for i = 1, 4000 do
+        world.add_watch(i, 1, 500, 500)
+    end
+    for i = 1, 12000 do
         local troop = {
             type = "test"
         }

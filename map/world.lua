@@ -195,22 +195,23 @@ M.troops_info = function(tm)
 end
 
 M.troop_watches = function()
-    local obj = {}
-    local compare = function(id, before, now)
+    local compare = function(watchid, before, now)
+        local notify = {}
         for twid in pairs(now) do
             if before[twid] then
                 before[twid] = nil
             else
-                obj[id] = obj[id] or {}
-                obj[id].add = obj[id].add or {}
-                obj[id].add[twid] = 1
-                -- obj[id].add[twid] = troops[twid]
+                notify.add = notify.add or {}
+                -- notify.add[twid] = troops[twid]
+                notify.add[twid] = 1
             end
         end
         for twid in pairs(before) do
-            obj[id] = obj[id] or {}
-            obj[id].del = obj[id].del or {}
-            obj[id].del[twid] = 1
+            notify.del = notify.del or {}
+            notify.del[twid] = 1
+        end
+        if next(notify) then
+            M.notify_watches("troopupdate", watchid, notify)
         end
     end
 
@@ -218,14 +219,10 @@ M.troop_watches = function()
     if not infos then
         return
     end
-    print("troop watches infos", dump(infos))
     for worldid, info in pairs(infos) do
         local before = watch_troops[worldid]
         watch_troops[worldid] = info
         compare(worldid, before, info)
-    end
-    if next(obj) then
-        M.notify_watches("troopupdate", obj)
     end
 end
 

@@ -47,7 +47,7 @@ struct World {
   int16_t correct_y(int16_t y);
   bool check_pos(int16_t cx, int16_t cy, int16_t len);
 
-  void troop_watches(unordered_map<int32_t, vector<int32_t>>&ret);
+  void troop_watches(unordered_map<int32_t, vector<int32_t>> &ret);
   void search_watches(int16_t cx, int16_t cy, int16_t len,
                       vector<int32_t> &ids);
   void dump_watches();
@@ -56,9 +56,10 @@ struct World {
 
   void dump_troops();
   void dump_troop_grids();
-  void gen_one_troop_grid(int32_t id, double sx, double sy, double ex, double ey, int max);
+  void gen_one_troop_grid(int32_t id, double sx, double sy, double ex,
+                          double ey, int max);
   void gen_troop_grids();
-  
+
   void troops_move(int64_t tm, vector<int32_t> &arrive);
   bool troop_arrive(Troop &troop);
   void troop_move_dis(Troop &troop, double dis);
