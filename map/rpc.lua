@@ -9,10 +9,13 @@ local watchid_playerid = {}
 
 local handle = {
     entityadd = function(watchids, entity)
+        -- print("entityadd", dump(watchids), dump(entity))
     end,
     entitydel = function(watchids, entity)
+        -- print("entitydel", dump(watchids), dump(entity))
     end,
     troopupdate = function(obj)
+        -- print("troopupdate", dump(obj))
         for watchid, info in pairs(obj) do
         end
     end

@@ -16,5 +16,6 @@ world.troop_arrive = function(troop)
     local path = troop.path
     local dx, dy = path[#path - 1], path[#path]
     local entity = world.get_entity_bypos(dx, dy)
-    print("troop arrived", dump(troop), dump(entity))
 end
+
+return world

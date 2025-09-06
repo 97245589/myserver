@@ -279,7 +279,7 @@ void World::search_watches(int16_t cx, int16_t cy, int16_t len,
   int maxgy = try_ / WATCH_LEN;
 
   int grids_num = (maxgx - mingx + 1) * (maxgy - mingy + 1);
-  int NOTIFY_MAX = 500;
+  int NOTIFY_MAX = 300;
 
   int all_num = 0;
   for (int i = mingx; i <= maxgx; ++i) {
@@ -326,6 +326,7 @@ void World::troop_watches(unordered_map<int32_t, vector<int32_t>> &ret) {
       }
       if (set_.size() >= PER_MAX) break;
     }
+    if (ret[watchid].size() == 0) ret.erase(watchid);
   }
 }
 

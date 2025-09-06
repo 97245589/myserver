@@ -89,23 +89,25 @@ M.add_entity = function(cx, cy, len, entity)
     entity.len = len
     entities[entity.worldid] = entity
     local ws = core:add_entity(cx, cy, len, entity.worldid)
-    M.notify_watches("entityadd", ws, entity)
+    if ws then
+        M.notify_watches("entityadd", ws, entity)
+    end
     return true
 end
 
 M.del_entity = function(worldid)
     local entity = entities[worldid]
+    entities[world_len] = nil
     if not entity then
         return
     end
     local cx = entity.cx
     local cy = entity.cy
     local len = entity.len
-    if (not M.area_entities(cx, cy, len)) then
-        return
-    end
     local ws = core:del_entity(cx, cy, len)
-    M.notify_watches("entitydel", ws, entity)
+    if ws then
+        M.notify_watches("entitydel", ws, entity)
+    end
 end
 
 M.recover_troop = function(troop)
@@ -201,7 +203,8 @@ M.troop_watches = function()
             else
                 obj[id] = obj[id] or {}
                 obj[id].add = obj[id].add or {}
-                obj[id].add[twid] = troops[twid]
+                obj[id].add[twid] = 1
+                -- obj[id].add[twid] = troops[twid]
             end
         end
         for twid in pairs(before) do
@@ -209,17 +212,20 @@ M.troop_watches = function()
             obj[id].del = obj[id].del or {}
             obj[id].del[twid] = 1
         end
-        M.notify_watches("troopupdate", obj)
     end
 
     local infos = core:troop_watches()
     if not infos then
         return
     end
+    print("troop watches infos", dump(infos))
     for worldid, info in pairs(infos) do
         local before = watch_troops[worldid]
         watch_troops[worldid] = info
-        compare(before, info)
+        compare(worldid, before, info)
+    end
+    if next(obj) then
+        M.notify_watches("troopupdate", obj)
     end
 end
 
