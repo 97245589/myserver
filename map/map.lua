@@ -5,10 +5,10 @@ local skynet = require "skynet"
 skynet.fork(function()
     while true do
         skynet.sleep(100)
-        local t = skynet.now()
+        -- local t = skynet.now()
         world.tick()
-        local diff = skynet.now() - t
-        print("map tick", diff)
+        -- local diff = skynet.now() - t
+        -- print("map tick", diff)
     end
 end)
 

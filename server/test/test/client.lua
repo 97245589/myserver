@@ -28,7 +28,7 @@ local test = function()
 
     skynet.fork(function()
         while true do
-            skynet.sleep(100)
+            skynet.sleep(1000)
             send_request("push_test", {})
         end
     end)
@@ -39,6 +39,8 @@ local test = function()
             print("recv:", p1, p2, dump(p3))
         end
     end)
+
+    send_request("enter_world")
 
     skynet.fork(function()
         local stdin = socket.stdin()

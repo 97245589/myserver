@@ -15,6 +15,7 @@ local after_init_players = {}
 M.add_mgr = function(name, mgr)
     if mgrs[name] then
         print(SERVICE_NAME, "mgr name repeated", name)
+        return
     end
     mgrs[name] = mgr
     if mgr.tick then

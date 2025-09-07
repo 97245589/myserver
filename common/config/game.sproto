@@ -60,3 +60,41 @@ push_test 300 {
         code 0 : integer
     }
 }
+
+.Entity {
+    worldid 0 : integer
+    type 1 : integer
+    cx 2 : integer
+    cy 3: integer
+    len 4 : integer
+    level 5: integer
+}
+
+enter_world 400 {
+    response {
+        code 0 : integer
+        entities 1 : *Entity(worldid)
+    }
+}
+
+.Troop {
+    worldid 0 : integer
+    nowpos 1 : integer
+    path 2 : *integer
+    tm 3 : integer
+    speed 4 : double
+    nowx 5 : double
+    nowy 6 : double
+}
+
+.Troopupdate {
+    add 0 : *Troop(worldid)
+    del 1 : *integer
+}
+push_mapinfo 401 {
+    request {
+        troopupdate 0 : Troopupdate
+        entityadd 1 : Entity
+        entitydel 2 : integer
+    }
+}

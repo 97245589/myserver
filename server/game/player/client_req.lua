@@ -8,6 +8,7 @@ local profile = require "skynet.profile"
 local profile_info = require "common.service.profile"
 local players = require "server.game.player.players"
 local game_common = require "server.game.game_common"
+local map = require "server.game.player.map"
 
 local proto
 local host
@@ -32,14 +33,20 @@ local send_package = function(fd, pack)
     local ret = socket.write(fd, string.pack(">s2", pack))
     if not ret then
         local playerid = fd_playerid[fd]
-        if playerid then
-            playerid_fd[playerid] = nil
-        end
+        M.kick_player(playerid)
         fd_playerid[fd] = nil
     end
+    print("send package", fd, ret)
 end
 
 M.kick_player = function(playerid)
+    if not playerid then
+        return
+    end
+    local player = players.players[playerid]
+    if player then
+        map.send(player, "player_leave", player.playerid)
+    end
     local fd = playerid_fd[playerid]
     if fd then
         fd_playerid[fd] = nil
