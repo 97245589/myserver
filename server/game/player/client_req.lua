@@ -36,21 +36,20 @@ local send_package = function(fd, pack)
         M.kick_player(playerid)
         fd_playerid[fd] = nil
     end
-    print("send package", fd, ret)
 end
 
 M.kick_player = function(playerid)
     if not playerid then
         return
     end
-    local player = players.players[playerid]
-    if player then
-        map.send(player, "player_leave", player.playerid)
-    end
     local fd = playerid_fd[playerid]
     if fd then
         fd_playerid[fd] = nil
         skynet.send("watchdog", "lua", "close_conn", fd)
+        local player = players.players[playerid]
+        if player then
+            map.send(player, "player_leave", player.playerid)
+        end
     end
     playerid_fd[playerid] = nil
 end

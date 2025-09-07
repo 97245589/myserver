@@ -69,9 +69,11 @@ end
 
 cmds.player_leave = function(playerid)
     print("map player leave", playerid)
-    local watchid = world.del_watch(playerid)
     playerid_src[playerid] = nil
-    watchid_playerid[watchid] = nil
+    local watchid = world.del_watch(playerid)
+    if watchid then
+        watchid_playerid[watchid] = nil
+    end
 end
 
 cmds.exit = function()

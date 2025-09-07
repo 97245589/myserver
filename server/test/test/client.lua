@@ -40,7 +40,7 @@ local test = function()
         end
     end)
 
-    send_request("enter_world")
+    -- send_request("enter_world")
 
     skynet.fork(function()
         local stdin = socket.stdin()

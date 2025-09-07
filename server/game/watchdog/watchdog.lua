@@ -24,8 +24,8 @@ local socket_cmd = {
         skynet.send(gate, "lua", "accept", fd)
     end,
     close = function(fd)
-        print("close conn fd", fd)
         skynet.send("verify", "lua", "close", fd)
+        close_conn(fd)
     end,
     error = function(fd, msg)
         print("socket error", fd, msg)
