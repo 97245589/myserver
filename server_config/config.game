@@ -4,7 +4,7 @@ gate_port = 10101
 debug_console_port = 10102
 server_name = "game"
 server_id = 1
---local_server = 1
+local_server = 1
 
 thread = 4
 harbor = 0

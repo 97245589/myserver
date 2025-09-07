@@ -1,4 +1,5 @@
 local require, print, dump = require, print, dump
+local pcall = pcall
 local pairs = pairs
 local cmds = require "common.service.cmds"
 local world = require "map.world"
@@ -16,11 +17,16 @@ local send = function(watchid, obj)
     if not playerid then
         return
     end
-    local src = playerid_src[playerid]
-    if src == 1 then
-        gamecommon.send_player_service("map_notify", playerid, obj)
-    else
-        cluster.send(src, gamecommon.get_player_service(playerid), "map_notify", playerid, obj)
+    local ok, ret = pcall(function()
+        local src = playerid_src[playerid]
+        if src == 1 then
+            gamecommon.send_player_service("map_notify", playerid, obj)
+        else
+            cluster.send(src, gamecommon.get_player_service(playerid), "map_notify", playerid, obj)
+        end
+    end)
+    if not ok then
+        cmds.player_leave(playerid)
     end
 end
 
