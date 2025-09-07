@@ -64,9 +64,3 @@ cluster_start.set_diff_func(function(diff)
         send_gameservers()
     end
 end)
-
-cmds.gameserver_info = function(args)
-    -- print("gameserver_info", dump(args))
-    game_servers[args.serverid] = args
-    send_gameservers()
-end

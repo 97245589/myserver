@@ -49,7 +49,7 @@ local node_conn_to_center = function()
     if next(diff) then
         cluster_node = ret
         cluster.reload(cluster_node)
-        print("diff", dump(diff))
+        -- print("diff", dump(diff))
         if diff_func then
             diff_func(diff)
         end

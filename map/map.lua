@@ -8,7 +8,7 @@ skynet.fork(function()
         local t = skynet.now()
         world.tick()
         local diff = skynet.now() - t
-        print("map tick", diff)
+        -- print("map tick", diff)
     end
 end)
 
