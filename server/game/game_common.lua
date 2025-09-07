@@ -28,4 +28,8 @@ M.send_all_player_service = function(cmd, ...)
     end
 end
 
+M.get_player_service = function(playerid)
+    return "player" .. playerserviceid(playerid)
+end
+
 return M

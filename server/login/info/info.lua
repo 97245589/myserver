@@ -12,22 +12,22 @@ cmds.game_servers = function(args)
     -- print("game_servers update", dump(args))
 end
 cmds.login_req = function(acc, server, secret)
-    local game = game_servers[server]
-    if not game then
+    local game_server = game_servers[server]
+    if not game_server then
         return
     end
 
     local serverid = acc_serverid[acc]
     if serverid and serverid ~= server then
         local dest = "game" .. serverid
-        cluster.send(dest, "@" .. dest, "login_kick", acc)
+        cluster.send(dest, "verify", "login_kick", acc)
     end
     acc_serverid[acc] = server
 
     local dest = "game" .. server
-    cluster.call(dest, "@" .. dest, "set_loginkey", acc, secret)
+    cluster.call(dest, "verify", "set_loginkey", acc, secret)
     return {
         code = 0,
-        host = game.host
+        host = game_server.host
     }
 end
