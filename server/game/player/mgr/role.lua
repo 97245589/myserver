@@ -14,7 +14,7 @@ M.init_player = function(player)
     role.playerid = player.playerid
     role.level = role.level or 1
     role.cross = role.cross or "cross1"
-    role.mapaddr = role.mapaddr or "game"
+    role.mapkey = role.mapkey or "game"
 end
 
 -- M.tick_player = function(player)

@@ -30,29 +30,39 @@ M.set_mapaddrs = function(src, addrs)
     else
         mapaddrs[src] = addrs
     end
-    print("get mapaddrs", src, dump(mapaddrs))
+    print("set mapaddrs", src, dump(mapaddrs))
 end
 
 local player_map_addr = function(player)
     local default_addr = mapaddrs.addrs.game
     local role = player.role
-    if not role.mapaddr then
+    if not role.mapkey then
         return default_addr
     end
     if not role.cross then
-        return mapaddrs.addrs[role.mapaddr] or default_addr
+        local addrs = mapaddrs.addrs
+        local addr = addrs[role.mapkey]
+        if not addr then
+            role.mapkey = "game"
+            return default_addr
+        else
+            return addr
+        end
     else
-        if not mapaddrs[role.cross] then
+        local addrs = mapaddrs[role.cross]
+        if not addrs or not addrs[role.mapkey] then
+            role.cross = nil
+            role.mapkey = "game"
             return default_addr
         end
-        return role.mapaddr, role.cross
+        return addrs[role.mapkey], role.cross
     end
 end
 
 M.send = function(player, cmd, ...)
     local mapaddr, cross = player_map_addr(player)
     if cross then
-        cluster.send(cross, "@" .. cross, cmd, mapaddr, ...)
+        cluster.send(cross, mapaddr, cmd, ...)
     else
         skynet.send(mapaddr, "lua", cmd, ...)
     end
@@ -61,7 +71,7 @@ end
 M.call = function(player, cmd, ...)
     local mapaddr, cross = player_map_addr(player)
     if cross then
-        return cluster.call(cross, "@" .. cross, cmd, mapaddr, ...)
+        return cluster.call(cross, mapaddr, cmd, ...)
     else
         return skynet.call(mapaddr, "lua", cmd, ...)
     end

@@ -29,15 +29,3 @@ cluster_start.set_diff_func(function(diff)
         ::cont::
     end
 end)
-
-cmds.player_enter = function(addrname, ...)
-    print("========= cross cluster player enter", addrname, ...)
-    local addr = mapaddrs[addrname]
-    return skynet.call(addr, "lua", "player_enter", ...)
-end
-
-cmds.player_leave = function(addrname, ...)
-    print("======== cross clsuter player leave", ...)
-    local addr = mapaddrs[addrname]
-    return skynet.call(addr, "lua", "player_leave", ...)
-end

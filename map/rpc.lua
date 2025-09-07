@@ -20,7 +20,7 @@ local send = function(watchid, obj)
     if src == 1 then
         gamecommon.send_player_service("map_notify", playerid, obj)
     else
-        cluster.send(src, "@" .. src, "map_notify", playerid, obj)
+        cluster.send(src, gamecommon.get_player_service(playerid), "map_notify", playerid, obj)
     end
 end
 
@@ -60,7 +60,7 @@ cmds.exit = function()
 end
 
 cmds.player_enter = function(playerid, src_server, weigh, cx, cy)
-    -- print("==== map player enter", playerid, src_server, weigh, cx, cy)
+    print("==== map player enter", playerid, src_server, weigh, cx, cy)
     local watchid = world.add_watch(playerid, weigh, cx, cy)
     watchid_playerid[watchid] = playerid
     if src_server == cluster_name then
@@ -72,7 +72,7 @@ cmds.player_enter = function(playerid, src_server, weigh, cx, cy)
 end
 
 cmds.player_leave = function(playerid)
-    print("map player leave", playerid)
+    print("==== map player leave", playerid)
     playerid_src[playerid] = nil
     local watchid = world.del_watch(playerid)
     if watchid then
