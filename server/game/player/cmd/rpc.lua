@@ -13,6 +13,6 @@ cmds.acts_tm_notify = pacts_tm.acts_tm_notify
 cmds.set_mapaddrs = map.set_mapaddrs
 
 cmds.map_notify = function(playerid, obj)
-    print("map_notify", playerid, dump(obj))
+    -- print("map_notify", playerid, dump(obj))
     push(playerid, "push_mapinfo", obj)
 end

@@ -16,7 +16,7 @@ local test = function()
     client.client_start({
         acc = acc,
         playerid = playerid,
-        local_server = true
+        -- local_server = true
     })
 
     send_request("select_player", {
@@ -40,7 +40,7 @@ local test = function()
         end
     end)
 
-    -- send_request("enter_world")
+    send_request("enter_world")
 
     skynet.fork(function()
         local stdin = socket.stdin()

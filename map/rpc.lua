@@ -55,6 +55,10 @@ cmds.init = function(mtp)
     mgr.init()
 end
 
+cmds.exit = function()
+    skynet.exit()
+end
+
 cmds.player_enter = function(playerid, src_server, weigh, cx, cy)
     -- print("==== map player enter", playerid, src_server, weigh, cx, cy)
     local watchid = world.add_watch(playerid, weigh, cx, cy)
@@ -76,6 +80,3 @@ cmds.player_leave = function(playerid)
     end
 end
 
-cmds.exit = function()
-    skynet.exit()
-end

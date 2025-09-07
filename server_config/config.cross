@@ -1,8 +1,7 @@
 ip = "$IP"
-cluster_port = 10300
-gate_port = 10301
-debug_console_port = 10302
-server_name = "login"
+cluster_port = 10600
+debug_console_port = 10601
+server_name = "cross"
 server_id = 1
 
 thread = 4
