@@ -22,9 +22,9 @@ M.call_player_service = function(cmd, playerid, ...)
     return skynet.call("player" .. player_service, "lua", cmd, playerid, ...)
 end
 
-M.send_all_player_service = function(...)
+M.send_all_player_service = function(cmd, ...)
     for i = 1, player_service_num do
-        skynet.send("player" .. i, "lua", ...)
+        skynet.send("player" .. i, "lua", cmd, ...)
     end
 end
 
