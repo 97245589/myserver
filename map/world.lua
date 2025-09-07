@@ -154,10 +154,10 @@ end
 M.del_watch = function(src)
     local worldid = watches[src]
     if worldid then
-        watches[src] = nil
         watch_troops[worldid] = nil
         core:del_watch(worldid)
     end
+    watches[src] = nil
     return worldid
 end
 
@@ -207,7 +207,7 @@ M.update_watch_troops = function()
         end
         for twid in pairs(before) do
             notify.del = notify.del or {}
-            notify.del[twid] = 1
+            table.insert(notify.del, twid)
         end
         if next(notify) then
             M.notify_watches("troopupdate", watchid, notify)
