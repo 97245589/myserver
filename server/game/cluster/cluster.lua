@@ -1,5 +1,5 @@
-local require, print = require, print
-require "common.service.cluster_start"
+local require, print, dump = require, print, dump
+local cluster_start = require "common.service.cluster_start"
 local skynet = require "skynet"
 local crypt = require "skynet.crypt"
 local cluster = require "skynet.cluster"
@@ -15,4 +15,13 @@ local gameserver_info = {
 
 cmds.gameserver_info = function()
     return gameserver_info
+end
+
+cmds.all_cluster_node = function()
+    return cluster_start.get_cluster_node()
+end
+
+cmds.set_mapaddrs = function(clustername, addrs)
+    -- print("game cluster set mapaddrs", clustername, dump(addrs))
+    gamecommon.send_all_player_service("set_mapaddrs", clustername, addrs)
 end

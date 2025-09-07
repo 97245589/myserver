@@ -27,7 +27,9 @@ local init_services = function()
     skynet.newservice("server/game/verify/start", "verify")
 
     if not skynet.getenv("local_server") then
-        skynet.newservice("server/game/cluster/start", "cluser")
+        skynet.timeout(100, function ()
+            skynet.newservice("server/game/cluster/start", "cluser")
+        end)
     end
 end
 

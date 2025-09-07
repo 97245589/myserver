@@ -13,11 +13,13 @@ M.init_player = function(player)
     role.acc = player.acc
     role.playerid = player.playerid
     role.level = role.level or 1
+    role.cross = role.cross or "cross1"
+    role.mapaddr = role.mapaddr or "game"
 end
 
-M.tick_player = function(player)
-    push(player.playerid, "push_test", {test=0})
-end
+-- M.tick_player = function(player)
+--     push(player.playerid, "push_test", {test=0})
+-- end
 
 M.levelup = function(player)
     local role = player.role
