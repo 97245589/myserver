@@ -22,8 +22,10 @@ local zstd_test = function()
             num = i
         }
     end
-    local bin = skynet.packstring(item)
-    print(format("len: %d, compresslen: %d", #bin, #zstd.compress(bin)))
+    print(format("len: %s, compresslen: %s", #skynet.packstring(item), #zstd.pack(item)))
+    local bin = zstd.pack(item)
+    local newitem = zstd.unpack(bin)
+    print(dump(newitem[10000]), #item, #newitem)
 end
 
 local dir_require_test = function()
