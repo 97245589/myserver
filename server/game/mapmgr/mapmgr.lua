@@ -19,7 +19,7 @@ local del_map = function(tp)
 end
 
 add_map("test")
-skynet.timeout(2000, function ()
+skynet.timeout(6000, function ()
     del_map("test")
 end)
 add_map("game")

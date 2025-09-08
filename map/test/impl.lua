@@ -13,6 +13,7 @@ local handle = {
     end,
     troopupdate = function(watchid, obj)
         -- print("troopupdate", watchid, dump(obj))
+        skynet.packstring(watchid, obj)
     end
 }
 world.notify_watches = function(cmd, ...)
