@@ -11,4 +11,4 @@ lworld.so : $(srcso)
 	g++ -o $@ -c $< $(COMMON_FLAGS) 
 
 clean:
-	rm cc/*.o *.so
+	rm cc/*.o
