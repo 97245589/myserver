@@ -23,58 +23,12 @@ else
         skynet.send(addr, "lua", ...)
     end
 
-    local handle = {
-        hgetall = function(key, parr, rarr)
-            local ret = {}
-            for i = 1, #rarr, 2 do
-                ret[rarr[i]] = rarr[i + 1]
-            end
-            return ret
-
-        end,
-        hmget = function(key, parr, rarr)
-            local ret = {}
-            for i = 1, #parr do
-                ret[parr[i]] = rarr[i]
-            end
-            return ret
-        end
-    }
-
     local dbcall = function(cmd, key, ...)
-        local ret = skynet.call(addr, "lua", cmd, key, ...)
-        local func = handle[cmd]
-        if not func then
-            return ret
-        end
-
-        local parr = table.pack(...)
-        return func(key, parr, ret)
-    end
-
-    local scan = function(match, count, func, maxlen)
-        local len = 0
-        local cursor = 0
-        while true do
-            local ret = dbcall("scan", cursor, "MATCH", match, "COUNT", count)
-            cursor = ret[1]
-            local arr = ret[2]
-            if #arr > 0 then
-                func(arr)
-            end
-            if "0" == cursor then
-                return
-            end
-            len = len + #arr
-            if maxlen and len >= maxlen then
-                return
-            end
-        end
+        return skynet.call(addr, "lua", cmd, key, ...)
     end
 
     return {
         send = dbsend,
-        call = dbcall,
-        scan = scan
+        call = dbcall
     }
 end

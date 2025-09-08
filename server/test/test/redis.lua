@@ -1,5 +1,6 @@
 require "common.tool.lua_tool"
-local require = require
+local require, print, dump = require, print, dump
+local math, string = math, string
 local skynet = require "skynet"
 
 local format = string.format
@@ -8,25 +9,17 @@ local cmd = function()
     local redis = require "common.tool.redis"
     local call = redis.call
 
-    call("set", "hello", "world")
-    print(call("get", "hello"))
-
-    call("hmset", 1, "hello", "world", "haha", "heihei")
-    print(dump(call("hgetall", 1)))
-    print(dump(call("hmget", 1, "test", "hello", "haha")))
-
-    local test = function(idx)
-        local t = skynet.now()
-        local n = 10000
-        for i = 1, n do
-            call("hmset", "hello" .. idx * n + 1, "test", "test1")
-        end
-        print(format("%s: hmset %s times cost %s", idx, n, skynet.now() - t))
-    end
-
-    for i = 1, 5 do
-        skynet.fork(test, i)
-    end
+    call("hmset", 1, 2, 20, 3, 30)
+    call("hset", 1, 4, 40)
+    print("hgetall", dump(call("hgetall", 1)))
+    print("hmget", dump(call("hmget", 1, 2)))
+    print(call("hget", 1, 3))
+    call("hdel", 1, 2)
+    print("hgetall", dump(call("hgetall", 1)))
+    print("keys", dump(call("keys", "*")))
+    call("del", 1)
+    print("keys", dump(call("keys", "*")))
+    call("flushdb")
 end
 
 local stress = function()
@@ -60,6 +53,6 @@ local stress = function()
 end
 
 skynet.start(function()
-    -- cmd()
-    stress()
+    cmd()
+    -- stress()
 end)
