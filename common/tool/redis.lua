@@ -16,7 +16,6 @@ if mode == "child" then
         end)
     end)
 else
-    local table = table
     local addr = skynet.uniqueservice("common/tool/redis", "child")
 
     local dbsend = function(...)

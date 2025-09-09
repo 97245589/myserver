@@ -9,7 +9,7 @@ SKYNET_DIR = ../skynet/skynet-src
 3RDFLAG = -I$(3RDPATH) -L$(3RDPATH) -Wl,-rpath,$(3RDPATH):3rd
 COMMON_FLAGS = -O2 -fPIC -shared -I$(LUA_DIR)
 
-all : lfs.so lzstd.so lutil.so lkcp.so
+all : lfs.so lzstd.so lutil.so lkcp.so lleveldb.so
 
 lfs.so : lfs/lfs.c
 	$(CC) -o $@ $^ $(COMMON_FLAGS) 
@@ -20,8 +20,11 @@ lzstd.so : lzstd/lzstd.c
 lutil.so : lutil/*.cc
 	$(CXX) -o $@ $^ $(COMMON_FLAGS) $(CXXFLAGS)
 
-lkcp.so: kcp/*.c kcp/*.cc
+lkcp.so : kcp/*.c kcp/*.cc
 	$(CXX) -o $@ $^ $(COMMON_FLAGS) $(CXXFLAGS) -I$(SKYNET_DIR)
+
+lleveldb.so : lleveldb/*.cc
+	$(CXX) -o $@ $^ $(COMMON_FLAGS) $(CXXFLAGS) $(3RDFLAG) -lleveldb
 
 .PHONY : clean
 clean:

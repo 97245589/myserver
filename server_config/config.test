@@ -1,7 +1,7 @@
 server_name = "test"
 debug_console_port = 10400
 
-thread = 4
+thread = 2
 harbor = 0
 start = "server/main"	-- main script
 luaservice = "skynet/service/?.lua;?.lua"
