@@ -15,8 +15,8 @@ if mode == "child" then
     CMD.del = function(key)
         db:del(key)
     end
-    CMD.keys = function(p)
-        return db:keys(p)
+    CMD.keys = function(pattern)
+        return db:keys(pattern)
     end
     CMD.hdel = function(key, hkey)
         db:hdel(key, hkey)

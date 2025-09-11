@@ -20,6 +20,11 @@ local test = function()
     print("realkeys", dump(call("realkeys")))
     call("del", 1)
     print("keys", dump(call("keys", "*")))
+
+    for i = 1, 100 do
+        call("hset", i, "hello", "world")
+    end
+    print(dump(call("keys", "2*")))
 end
 
 local stress1 = function()
@@ -68,6 +73,6 @@ end
 
 skynet.start(function()
     -- test()
-    -- stress1()
+    stress1()
     stress2()
 end)

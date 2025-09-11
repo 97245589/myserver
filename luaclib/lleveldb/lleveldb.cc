@@ -8,6 +8,7 @@ extern "C"
 #include <iostream>
 #include <string>
 #include <vector>
+#include <fnmatch.h>
 using namespace std;
 
 #include "leveldb/db.h"
@@ -22,11 +23,11 @@ struct Lleveldb
   static int gc(lua_State *L);
 
   static int realkeys(lua_State *L);
+  static int keys(lua_State *L);
 
   static int del(lua_State *L);
   static int hmset(lua_State *L);
   static int hgetall(lua_State *L);
-  static int keys(lua_State *L);
   static int hget(lua_State *L);
   static int hset(lua_State *L);
   static int hdel(lua_State *L);
@@ -191,10 +192,9 @@ int Lleveldb::keys(lua_State *L)
   leveldb::DB **pp = (leveldb::DB **)luaL_checkudata(L, 1, LLEVELDB_META);
   leveldb::DB *db = *pp;
 
-  if (!lua_isstring(L, 2))
-  {
-    return luaL_error(L, "keys param 2 err");
-  }
+  size_t len;
+  const char *p = luaL_checklstring(L, 2, &len);
+  string patt{p, len};
 
   vector<string> keys;
   leveldb::Iterator *it = db->NewIterator(leveldb::ReadOptions());
@@ -203,10 +203,11 @@ int Lleveldb::keys(lua_State *L)
     string k = it->key().ToString();
     int p = k.find(split_);
     if (p < 0 || p >= k.size() - 1)
-    {
       continue;
-    }
+
     string key = k.substr(0, p);
+    if (0 != fnmatch(patt.c_str(), key.c_str(), 0))
+      continue;
     if (keys.empty() || keys.back() != key)
     {
       keys.push_back(key);
