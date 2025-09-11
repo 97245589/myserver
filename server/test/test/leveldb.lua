@@ -34,7 +34,7 @@ local stress1 = function()
     local t = skynet.now()
     local n = 100000
     for i = 1, n do
-        call("hset", i, "hello" .. i, "world" .. i)
+        call("hset", i, "data", "world" .. i)
     end
     print(format("hset %s times cost %s", n, skynet.now() - t))
     print(dump(call("hgetall", 100000)))
