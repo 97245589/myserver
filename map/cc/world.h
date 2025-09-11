@@ -1,6 +1,7 @@
 #ifndef __WORLD_H__
 #define __WORLD_H__
 
+#include <cstdint>
 #include <set>
 #include <unordered_map>
 #include <unordered_set>
@@ -11,17 +12,21 @@ using std::unordered_map;
 using std::unordered_set;
 using std::vector;
 
-struct Watch {
+struct Watch
+{
   int32_t id_;
   int32_t weigh_;
   int16_t cx_, cy_;
-  bool operator<(const Watch &rhs) const {
-    if (weigh_ != rhs.weigh_) return weigh_ > rhs.weigh_;
+  bool operator<(const Watch &rhs) const
+  {
+    if (weigh_ != rhs.weigh_)
+      return weigh_ > rhs.weigh_;
     return id_ < rhs.id_;
   }
 };
 
-struct Troop {
+struct Troop
+{
   int32_t id_;
   vector<int16_t> path_;
   int16_t nowpos_;
@@ -30,7 +35,8 @@ struct Troop {
   double speed_;
 };
 
-struct World {
+struct World
+{
   int16_t len_, wid_;
   vector<vector<int32_t>> entities_;
   unordered_map<int32_t, Troop> troops_;

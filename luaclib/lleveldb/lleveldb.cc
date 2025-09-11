@@ -275,6 +275,7 @@ int Lleveldb::hmset(lua_State *L) {
 int Lleveldb::gc(lua_State *L) {
   leveldb::DB **pp = (leveldb::DB **)luaL_checkudata(L, 1, LLEVELDB_META);
   delete *pp;
+  return 0;
 }
 
 void Lleveldb::meta(lua_State *L) {

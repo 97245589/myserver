@@ -1,3 +1,10 @@
+CXX = g++
+export CXX
+CXXFLAGS = -std=c++17
+export CXXFLAGS
+CC = gcc
+export CC
+
 THREAD_NUM = 16
 
 SKYNET = skynet/skynet

@@ -1,7 +1,3 @@
-CC = gcc
-CXX = g++
-CXXFLAGS = -std=c++17
-
 LUA_DIR = ../skynet/3rd/lua
 SKYNET_DIR = ../skynet/skynet-src
 # 3RDPATH = $(abspath ../3rd)

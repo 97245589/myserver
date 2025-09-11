@@ -44,6 +44,7 @@ int Lworld::del_watch(lua_State *L) {
   World &world = **pp;
   int32_t id = luaL_checkinteger(L, 2);
   world.del_watch(id);
+  return 0;
 }
 
 int Lworld::watch_troops(lua_State *L) {

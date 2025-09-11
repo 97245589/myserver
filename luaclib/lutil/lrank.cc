@@ -120,6 +120,7 @@ int Lrank::add(lua_State *L) {
 int Lrank::lrank_gc(lua_State *L) {
   Rank **pp = (Rank **)luaL_checkudata(L, 1, LRANK_META);
   delete *pp;
+  return 0;
 }
 
 void Lrank::lrank_meta(lua_State *L) {
