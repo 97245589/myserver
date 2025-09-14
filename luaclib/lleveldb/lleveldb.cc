@@ -11,13 +11,18 @@ extern "C" {
 #include <vector>
 using namespace std;
 
+#include "leveldb/cache.h"
 #include "leveldb/db.h"
-#include "leveldb/write_batch.h"
 #include "leveldb/filter_policy.h"
+#include "leveldb/write_batch.h"
 
 static const char *LLEVELDB_META = "LLEVELDB_META";
 
 struct Lleveldb {
+  leveldb::DB *db_;
+  const leveldb::FilterPolicy *filter_;
+  leveldb::Cache *cache_;
+
   static int create(lua_State *L);
   static void meta(lua_State *L);
   static int gc(lua_State *L);
@@ -40,8 +45,8 @@ struct Lleveldb {
 };
 
 int Lleveldb::hmget(lua_State *L) {
-  leveldb::DB **pp = (leveldb::DB **)luaL_checkudata(L, 1, LLEVELDB_META);
-  leveldb::DB *db = *pp;
+  Lleveldb *p = (Lleveldb *)luaL_checkudata(L, 1, LLEVELDB_META);
+  leveldb::DB *db = p->db_;
 
   luaL_checktype(L, 2, LUA_TTABLE);
   int len = lua_rawlen(L, 2);
@@ -73,8 +78,8 @@ int Lleveldb::hmget(lua_State *L) {
 }
 
 int Lleveldb::hget(lua_State *L) {
-  leveldb::DB **pp = (leveldb::DB **)luaL_checkudata(L, 1, LLEVELDB_META);
-  leveldb::DB *db = *pp;
+  Lleveldb *p = (Lleveldb *)luaL_checkudata(L, 1, LLEVELDB_META);
+  leveldb::DB *db = p->db_;
 
   size_t lk;
   const char *pk = luaL_checklstring(L, 2, &lk);
@@ -95,8 +100,8 @@ int Lleveldb::hget(lua_State *L) {
 }
 
 int Lleveldb::hset(lua_State *L) {
-  leveldb::DB **pp = (leveldb::DB **)luaL_checkudata(L, 1, LLEVELDB_META);
-  leveldb::DB *db = *pp;
+  Lleveldb *p = (Lleveldb *)luaL_checkudata(L, 1, LLEVELDB_META);
+  leveldb::DB *db = p->db_;
 
   size_t lk;
   const char *pk = luaL_checklstring(L, 2, &lk);
@@ -113,8 +118,8 @@ int Lleveldb::hset(lua_State *L) {
 }
 
 int Lleveldb::hdel(lua_State *L) {
-  leveldb::DB **pp = (leveldb::DB **)luaL_checkudata(L, 1, LLEVELDB_META);
-  leveldb::DB *db = *pp;
+  Lleveldb *p = (Lleveldb *)luaL_checkudata(L, 1, LLEVELDB_META);
+  leveldb::DB *db = p->db_;
 
   size_t lk;
   const char *pk = luaL_checklstring(L, 2, &lk);
@@ -129,8 +134,8 @@ int Lleveldb::hdel(lua_State *L) {
 }
 
 int Lleveldb::realkeys(lua_State *L) {
-  leveldb::DB **pp = (leveldb::DB **)luaL_checkudata(L, 1, LLEVELDB_META);
-  leveldb::DB *db = *pp;
+  Lleveldb *p = (Lleveldb *)luaL_checkudata(L, 1, LLEVELDB_META);
+  leveldb::DB *db = p->db_;
 
   lua_createtable(L, 0, 0);
   int i = 1;
@@ -170,12 +175,12 @@ void Lleveldb::search_key(leveldb::DB *&db, string str,
 }
 
 int Lleveldb::keys(lua_State *L) {
-  leveldb::DB **pp = (leveldb::DB **)luaL_checkudata(L, 1, LLEVELDB_META);
-  leveldb::DB *db = *pp;
+  Lleveldb *p = (Lleveldb *)luaL_checkudata(L, 1, LLEVELDB_META);
+  leveldb::DB *db = p->db_;
 
   size_t len;
-  const char *p = luaL_checklstring(L, 2, &len);
-  string patt{p, len};
+  const char *ppat = luaL_checklstring(L, 2, &len);
+  string patt{ppat, len};
 
   vector<string> keys;
   leveldb::Iterator *it = db->NewIterator(leveldb::ReadOptions());
@@ -202,8 +207,8 @@ int Lleveldb::keys(lua_State *L) {
 }
 
 int Lleveldb::del(lua_State *L) {
-  leveldb::DB **pp = (leveldb::DB **)luaL_checkudata(L, 1, LLEVELDB_META);
-  leveldb::DB *db = *pp;
+  Lleveldb *p = (Lleveldb *)luaL_checkudata(L, 1, LLEVELDB_META);
+  leveldb::DB *db = p->db_;
 
   size_t len;
   const char *ps = luaL_checklstring(L, 2, &len);
@@ -220,8 +225,8 @@ int Lleveldb::del(lua_State *L) {
 }
 
 int Lleveldb::hkeys(lua_State *L) {
-  leveldb::DB **pp = (leveldb::DB **)luaL_checkudata(L, 1, LLEVELDB_META);
-  leveldb::DB *db = *pp;
+  Lleveldb *p = (Lleveldb *)luaL_checkudata(L, 1, LLEVELDB_META);
+  leveldb::DB *db = p->db_;
 
   size_t len;
   const char *ps = luaL_checklstring(L, 2, &len);
@@ -236,8 +241,8 @@ int Lleveldb::hkeys(lua_State *L) {
 }
 
 int Lleveldb::hgetall(lua_State *L) {
-  leveldb::DB **pp = (leveldb::DB **)luaL_checkudata(L, 1, LLEVELDB_META);
-  leveldb::DB *db = *pp;
+  Lleveldb *p = (Lleveldb *)luaL_checkudata(L, 1, LLEVELDB_META);
+  leveldb::DB *db = p->db_;
 
   size_t len;
   const char *ps = luaL_checklstring(L, 2, &len);
@@ -256,8 +261,8 @@ int Lleveldb::hgetall(lua_State *L) {
 }
 
 int Lleveldb::hmset(lua_State *L) {
-  leveldb::DB **pp = (leveldb::DB **)luaL_checkudata(L, 1, LLEVELDB_META);
-  leveldb::DB *db = *pp;
+  Lleveldb *p = (Lleveldb *)luaL_checkudata(L, 1, LLEVELDB_META);
+  leveldb::DB *db = p->db_;
 
   luaL_checktype(L, 2, LUA_TTABLE);
   uint32_t len = lua_rawlen(L, 2);
@@ -288,8 +293,11 @@ int Lleveldb::hmset(lua_State *L) {
 }
 
 int Lleveldb::gc(lua_State *L) {
-  leveldb::DB **pp = (leveldb::DB **)luaL_checkudata(L, 1, LLEVELDB_META);
-  delete *pp;
+  Lleveldb *p = (Lleveldb *)luaL_checkudata(L, 1, LLEVELDB_META);
+  delete p->db_;
+  delete p->filter_;
+  delete p->cache_;
+  cout << "lleveldb gc" << endl;
   return 0;
 }
 
@@ -310,7 +318,7 @@ void Lleveldb::meta(lua_State *L) {
 
 int Lleveldb::create(lua_State *L) {
   size_t len;
-  const char *p = luaL_checklstring(L, 1, &len);
+  const char *pname = luaL_checklstring(L, 1, &len);
 
   leveldb::DB *db;
   leveldb::Options options;
@@ -319,14 +327,19 @@ int Lleveldb::create(lua_State *L) {
   options.write_buffer_size = 16 * 1024 * 1024;
   options.max_file_size = 8 * 1024 * 1024;
   options.block_size = 16 * 1024;
-  leveldb::Status status = leveldb::DB::Open(options, {p, len}, &db);
+  options.filter_policy = leveldb::NewBloomFilterPolicy(10);
+  options.block_cache = leveldb::NewLRUCache(1024 * 1024 * 5);
+  leveldb::Status status = leveldb::DB::Open(options, {pname, len}, &db);
 
   if (!status.ok()) {
     return luaL_error(L, "leveldb open err");
   }
 
-  leveldb::DB **pp = (leveldb::DB **)lua_newuserdata(L, sizeof(db));
-  *pp = db;
+  Lleveldb *pl = (Lleveldb *)lua_newuserdata(L, sizeof(Lleveldb));
+  pl->db_ = db;
+  pl->filter_ = options.filter_policy;
+  pl->cache_ = options.block_cache;
+
   meta(L);
   return 1;
 }
