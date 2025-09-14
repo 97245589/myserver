@@ -13,14 +13,12 @@ using namespace std;
 
 #include "leveldb/cache.h"
 #include "leveldb/db.h"
-#include "leveldb/filter_policy.h"
 #include "leveldb/write_batch.h"
 
 static const char *LLEVELDB_META = "LLEVELDB_META";
 
 struct Lleveldb {
   leveldb::DB *db_;
-  const leveldb::FilterPolicy *filter_;
   leveldb::Cache *cache_;
 
   static int create(lua_State *L);
@@ -295,7 +293,6 @@ int Lleveldb::hmset(lua_State *L) {
 int Lleveldb::gc(lua_State *L) {
   Lleveldb *p = (Lleveldb *)luaL_checkudata(L, 1, LLEVELDB_META);
   delete p->db_;
-  delete p->filter_;
   delete p->cache_;
   // cout << "lleveldb gc" << endl;
   return 0;
@@ -327,7 +324,6 @@ int Lleveldb::create(lua_State *L) {
   options.write_buffer_size = 16 * 1024 * 1024;
   options.max_file_size = 8 * 1024 * 1024;
   options.block_size = 16 * 1024;
-  options.filter_policy = leveldb::NewBloomFilterPolicy(10);
   options.block_cache = leveldb::NewLRUCache(1024 * 1024 * 5);
   leveldb::Status status = leveldb::DB::Open(options, {pname, len}, &db);
 
@@ -337,7 +333,6 @@ int Lleveldb::create(lua_State *L) {
 
   Lleveldb *pl = (Lleveldb *)lua_newuserdata(L, sizeof(Lleveldb));
   pl->db_ = db;
-  pl->filter_ = options.filter_policy;
   pl->cache_ = options.block_cache;
 
   meta(L);
