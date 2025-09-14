@@ -13,6 +13,7 @@ using namespace std;
 
 #include "leveldb/db.h"
 #include "leveldb/write_batch.h"
+#include "leveldb/filter_policy.h"
 
 static const char *LLEVELDB_META = "LLEVELDB_META";
 
@@ -23,9 +24,9 @@ struct Lleveldb {
 
   static int realkeys(lua_State *L);
   static int keys(lua_State *L);
-
   static int del(lua_State *L);
   static int hmset(lua_State *L);
+  static int hkeys(lua_State *L);
   static int hgetall(lua_State *L);
   static int hget(lua_State *L);
   static int hset(lua_State *L);
@@ -218,13 +219,25 @@ int Lleveldb::del(lua_State *L) {
   return 0;
 }
 
-int Lleveldb::hgetall(lua_State *L) {
+int Lleveldb::hkeys(lua_State *L) {
   leveldb::DB **pp = (leveldb::DB **)luaL_checkudata(L, 1, LLEVELDB_META);
   leveldb::DB *db = *pp;
 
-  if (lua_isnil(L, 2)) {
-    return luaL_error(L, "hgetall no key");
-  }
+  size_t len;
+  const char *ps = luaL_checklstring(L, 2, &len);
+  string str{ps, len};
+  int i = 0;
+  lua_createtable(L, 0, 0);
+  search_key(db, str, [&](string key, string val, string realkey) {
+    lua_pushlstring(L, key.c_str(), key.size());
+    lua_rawseti(L, -2, ++i);
+  });
+  return 1;
+}
+
+int Lleveldb::hgetall(lua_State *L) {
+  leveldb::DB **pp = (leveldb::DB **)luaL_checkudata(L, 1, LLEVELDB_META);
+  leveldb::DB *db = *pp;
 
   size_t len;
   const char *ps = luaL_checklstring(L, 2, &len);
@@ -282,11 +295,11 @@ int Lleveldb::gc(lua_State *L) {
 
 void Lleveldb::meta(lua_State *L) {
   if (luaL_newmetatable(L, LLEVELDB_META)) {
-    luaL_Reg l[] = {{"del", del},           {"hmset", hmset},
-                    {"hmget", hmget},       {"hgetall", hgetall},
-                    {"hget", hget},         {"hset", hset},
-                    {"hdel", hdel},         {"keys", keys},
-                    {"realkeys", realkeys}, {NULL, NULL}};
+    luaL_Reg l[] = {
+        {"del", del},           {"hmset", hmset},     {"hmget", hmget},
+        {"hkeys", hkeys},       {"hgetall", hgetall}, {"hget", hget},
+        {"hset", hset},         {"hdel", hdel},       {"keys", keys},
+        {"realkeys", realkeys}, {NULL, NULL}};
     luaL_newlib(L, l);
     lua_setfield(L, -2, "__index");
     lua_pushcfunction(L, gc);

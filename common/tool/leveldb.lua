@@ -33,6 +33,9 @@ if mode == "child" then
     CMD.hmget = function(key, ...)
         return db:hmget(table.pack(key, ...))
     end
+    CMD.hkeys = function(key)
+        return db:hkeys(key)
+    end
     CMD.hgetall = function(key)
         return db:hgetall(key)
     end

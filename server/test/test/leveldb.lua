@@ -24,7 +24,12 @@ local test = function()
     for i = 1, 100 do
         call("hset", i, "hello", "world")
     end
-    print(dump(call("keys", "2*")))
+    print(dump(call("keys", "*2*")))
+    for i = 1, 50 do
+        call("hset", "test", "hello" .. i, 1)
+    end
+    print(dump(call("hgetall", "test")))
+    print(dump(call("hkeys", "test")))
 end
 
 local stress1 = function()
@@ -72,7 +77,7 @@ local stress2 = function()
 end
 
 skynet.start(function()
-    -- test()
-    stress1()
-    stress2()
+    test()
+    -- stress1()
+    -- stress2()
 end)
