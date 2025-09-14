@@ -297,7 +297,7 @@ int Lleveldb::gc(lua_State *L) {
   delete p->db_;
   delete p->filter_;
   delete p->cache_;
-  cout << "lleveldb gc" << endl;
+  // cout << "lleveldb gc" << endl;
   return 0;
 }
 

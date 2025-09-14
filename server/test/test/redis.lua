@@ -22,7 +22,23 @@ local cmd = function()
     call("flushdb")
 end
 
-local stress = function()
+local stress1 = function()
+    local redis = require "common.tool.redis"
+    local test = function(name)
+        local t = skynet.now()
+        local n = 20000
+        for i = 1, n do
+            redis.call("hget", i, 1)
+        end
+        print(format("%s hget %s times cost %s", name, n, skynet.now() - t))
+    end
+
+    for i = 1, 5 do
+        skynet.fork(test, i)
+    end
+end
+
+local stress2 = function()
     local redis = require "common.tool.redis"
     local zstd = require "common.tool.zstd"
     local call = redis.call
@@ -53,6 +69,7 @@ local stress = function()
 end
 
 skynet.start(function()
-    cmd()
-    -- stress()
+    -- cmd()
+    stress1()
+    -- stress2()
 end)
