@@ -19,7 +19,6 @@ static const char *LLEVELDB_META = "LLEVELDB_META";
 
 struct Lleveldb {
   leveldb::DB *db_;
-  leveldb::Cache *cache_;
 
   static int create(lua_State *L);
   static void meta(lua_State *L);
@@ -293,8 +292,6 @@ int Lleveldb::hmset(lua_State *L) {
 int Lleveldb::gc(lua_State *L) {
   Lleveldb *p = (Lleveldb *)luaL_checkudata(L, 1, LLEVELDB_META);
   delete p->db_;
-  delete p->cache_;
-  // cout << "lleveldb gc" << endl;
   return 0;
 }
 
@@ -324,7 +321,6 @@ int Lleveldb::create(lua_State *L) {
   options.write_buffer_size = 16 * 1024 * 1024;
   options.max_file_size = 8 * 1024 * 1024;
   options.block_size = 16 * 1024;
-  options.block_cache = leveldb::NewLRUCache(1024 * 1024 * 5);
   leveldb::Status status = leveldb::DB::Open(options, {pname, len}, &db);
 
   if (!status.ok()) {
@@ -333,7 +329,6 @@ int Lleveldb::create(lua_State *L) {
 
   Lleveldb *pl = (Lleveldb *)lua_newuserdata(L, sizeof(Lleveldb));
   pl->db_ = db;
-  pl->cache_ = options.block_cache;
 
   meta(L);
   return 1;
