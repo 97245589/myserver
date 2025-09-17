@@ -41,39 +41,6 @@ struct Lleveldb {
   const static char split_ = 0xff;
 };
 
-int Lleveldb::hmget(lua_State *L) {
-  Lleveldb *p = (Lleveldb *)luaL_checkudata(L, 1, LLEVELDB_META);
-  leveldb::DB *db = p->db_;
-
-  luaL_checktype(L, 2, LUA_TTABLE);
-  int len = lua_rawlen(L, 2);
-  if (len < 2) {
-    return luaL_error(L, "leveldb hmget len arr");
-  }
-  lua_createtable(L, len - 1, 0);
-  size_t lk;
-  lua_rawgeti(L, 2, 1);
-  const char *pk = luaL_checklstring(L, -1, &lk);
-  string key{pk, lk};
-  for (int i = 2; i <= len; ++i) {
-    lua_rawgeti(L, 2, i);
-    size_t lhk;
-    const char *phk = luaL_checklstring(L, -1, &lhk);
-    string hkey{phk, lhk};
-    string rkey = key + split_ + hkey;
-    string val;
-    leveldb::Status s = db->Get(leveldb::ReadOptions(), rkey, &val);
-    if (s.ok()) {
-      lua_pushlstring(L, val.c_str(), val.size());
-    } else {
-      lua_pushnil(L);
-    }
-    lua_rawseti(L, 3, i - 1);
-    lua_settop(L, 3);
-  }
-  return 1;
-}
-
 int Lleveldb::hget(lua_State *L) {
   Lleveldb *p = (Lleveldb *)luaL_checkudata(L, 1, LLEVELDB_META);
   leveldb::DB *db = p->db_;
@@ -261,32 +228,57 @@ int Lleveldb::hmset(lua_State *L) {
   Lleveldb *p = (Lleveldb *)luaL_checkudata(L, 1, LLEVELDB_META);
   leveldb::DB *db = p->db_;
 
-  luaL_checktype(L, 2, LUA_TTABLE);
-  uint32_t len = lua_rawlen(L, 2);
-  if (len < 3 || len % 2 == 0) {
-    return luaL_error(L, "leveldb hmset len err");
+  int pnum = lua_gettop(L);
+  if (pnum < 4 || pnum % 2 != 0) {
+    return luaL_error(L, "leveldb hmset len arr");
   }
+  size_t lk;
+  const char *pk = luaL_checklstring(L, 2, &lk);
+  string key{pk, lk};
 
   leveldb::WriteBatch batch;
-  size_t lk;
-  lua_rawgeti(L, 2, 1);
-  const char *pk = luaL_checklstring(L, 3, &lk);
-  string key{pk, lk};
-  for (int i = 2; i <= len - 1; i += 2) {
-    lua_settop(L, 2);
-    lua_rawgeti(L, 2, i);
+  for (int i = 3; i < pnum; i += 2) {
     size_t lhk;
-    const char *phk = luaL_checklstring(L, 3, &lhk);
+    const char *phk = luaL_checklstring(L, i, &lhk);
     string hkey{phk, lhk};
     string rkey = key + split_ + hkey;
-    lua_rawgeti(L, 2, i + 1);
     size_t lv;
-    const char *pv = luaL_checklstring(L, 4, &lv);
+    const char *pv = luaL_checklstring(L, i + 1, &lv);
     string val{pv, lv};
     batch.Put(rkey, val);
   }
   db->Write(leveldb::WriteOptions(), &batch);
   return 0;
+}
+
+int Lleveldb::hmget(lua_State *L) {
+  Lleveldb *p = (Lleveldb *)luaL_checkudata(L, 1, LLEVELDB_META);
+  leveldb::DB *db = p->db_;
+
+  int pnum = lua_gettop(L);
+  if (pnum < 3) {
+    return luaL_error(L, "leveldb hmget len arr");
+  }
+
+  size_t lk;
+  const char *pk = luaL_checklstring(L, 2, &lk);
+  string key{pk, lk};
+  lua_createtable(L, pnum - 2, 0);
+  for (int i = 3; i <= pnum; ++i) {
+    size_t lhk;
+    const char *phk = luaL_checklstring(L, i, &lhk);
+    string hkey{phk, lhk};
+    string rkey = key + split_ + hkey;
+    string val;
+    leveldb::Status s = db->Get(leveldb::ReadOptions(), rkey, &val);
+    if (s.ok()) {
+      lua_pushlstring(L, val.c_str(), val.size());
+    } else {
+      lua_pushnil(L);
+    }
+    lua_rawseti(L, -2, i - 2);
+  }
+  return 1;
 }
 
 int Lleveldb::gc(lua_State *L) {

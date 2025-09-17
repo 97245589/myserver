@@ -10,8 +10,9 @@ local test = function()
 
     call("hmset", 1, 2, 20, 3, 30, 7, 70)
     call("hset", 1, 4, 40)
+    call("hmset", 1, 10, 100)
     print("hgetall", dump(call("hgetall", 1)), dump(call("hkeys", 1)))
-    print("hmget", dump(call("hmget", 1, 2)))
+    print("hmget", dump(call("hmget", 1, 2, 5, 7)))
     print(call("hget", 1, 3))
     call("hdel", 1, 2)
     print("hgetall", dump(call("hgetall", 1)), dump(call("hkeys", 1)))
@@ -20,6 +21,7 @@ local test = function()
     print("realkeys", dump(call("realkeys")))
     call("del", 1)
     print("keys", dump(call("keys", "*")))
+    print("realkeys", dump(call("realkeys")))
 end
 
 local stress1 = function()

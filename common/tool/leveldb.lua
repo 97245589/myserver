@@ -28,10 +28,10 @@ if mode == "child" then
         return db:hset(key, hkey, val)
     end
     CMD.hmset = function(key, ...)
-        db:hmset(table.pack(key, ...))
+        db:hmset(key, ...)
     end
     CMD.hmget = function(key, ...)
-        return db:hmget(table.pack(key, ...))
+        return db:hmget(key, ...)
     end
     CMD.hkeys = function(key)
         return db:hkeys(key)
