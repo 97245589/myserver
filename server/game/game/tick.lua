@@ -1,8 +1,8 @@
 local require, pcall = require, pcall
 local print = print
 local skynet = require "skynet"
-local mgrs = require "server.game.player_mgr.mgrs"
-local dbdata = require "server.game.player_mgr.dbdata"
+local mgrs = require "server.game.game.mgrs"
+local dbdata = require "server.game.game.dbdata"
 
 skynet.timeout(100, function()
     mgrs.start_timeout()

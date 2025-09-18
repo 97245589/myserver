@@ -3,7 +3,7 @@ local pairs, ipairs, next = pairs, ipairs, next
 local skynet = require "skynet"
 local config = require"common.service.config_load".excel_config
 local common = require "server.game.game_common"
-local mgrs = require "server.game.player_mgr.mgrs"
+local mgrs = require "server.game.game.mgrs"
 local timefunc = require "common.func.timefunc"
 
 local dbdata = mgrs.dbdata

@@ -1,6 +1,6 @@
 local require, os, print, dump = require, os, print, dump
 local zstd = require "common.tool.zstd"
-local mgrs = require "server.game.player_mgr.mgrs"
+local mgrs = require "server.game.game.mgrs"
 local time = require "common.func.time"
 
 local M = {

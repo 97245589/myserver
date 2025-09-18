@@ -19,8 +19,8 @@ local init_services = function()
         services[service_name] = addr
     end
 
-    local addr = skynet.newservice("server/game/player_mgr/start", "player_mgr", 1)
-    services.player_mgr = addr
+    local addr = skynet.newservice("server/game/game/start", "game", 1)
+    services.game = addr
 
     skynet.newservice("server/game/mapmgr/start", "mapmgr", 1)
     skynet.newservice("server/game/watchdog/start", "watchdog")

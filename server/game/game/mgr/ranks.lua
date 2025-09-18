@@ -2,7 +2,7 @@ local require, print, dump = require, print, dump
 local table, pairs, next = table, pairs, next
 local os, tostring = os, tostring
 local skynet = require "skynet"
-local mgrs = require "server.game.player_mgr.mgrs"
+local mgrs = require "server.game.game.mgrs"
 local lrank = require "lutil.rank"
 
 local dbdata = mgrs.dbdata

@@ -1,6 +1,6 @@
 local print, dump, require, string = print, tdump, require, string
-local acts_tm = require "server.game.player_mgr.mgr.acts_tm"
-local mgrs = require "server.game.player_mgr.mgrs"
+local acts_tm = require "server.game.game.mgr.acts_tm"
+local mgrs = require "server.game.game.mgrs"
 local format = string.format
 
 local dbdata = mgrs.dbdata
