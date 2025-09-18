@@ -9,7 +9,7 @@ local dbdata = mgrs.dbdata
 dbdata.ranks = dbdata.ranks or {}
 local dbranks = dbdata.ranks
 
-local tick_info = {}
+local update_mark = {}
 local tp_ranks = {}
 local M = {}
 
@@ -24,13 +24,15 @@ M.init = function(dbranks)
 end
 
 M.tick = function()
-    for rankid, core in pairs(tick_info) do
+    for rankid, core in pairs(update_mark) do
         local rank = dbranks[rankid]
-        local info = core:info()
-        rank.arr = info.arr
-        rank.map = info.map
+        if rank then
+            local info = core:info()
+            rank.arr = info.arr
+            rank.map = info.map
+        end
     end
-    tick_info = {}
+    update_mark = {}
 end
 
 M.add_type_rank = function(rankid, tp, num)
@@ -76,27 +78,43 @@ M.add_score = function(tp, id, score)
 
     for rankid, core in pairs(tpranks) do
         core:add(id, score, os.time())
-        tick_info[rankid] = core
+        update_mark[rankid] = core
     end
 end
 
-M.get_info = function(rankid, id, num)
+M.get_info = function(rankid, lowerb, upperb, meid)
     local rank = dbranks[rankid]
-    if not rank or not rank.arr then
+    if not rank then
+        return
+    end
+    local core = update_mark[rankid]
+    if core then
+        local info = core:info()
+        rank.arr = info.arr
+        rank.map = info.map
+        update_mark[rankid] = nil
+    end
+
+    local arr = rank.arr
+    if not arr then
         return
     end
 
-    local c = 0
-    local arr = rank.arr
-    local ret = {}
-    for i = 1, #arr, 3 do
-        table.insert(ret, arr[i])
-        table.insert(ret, arr[i + 1])
-        c = c + 1
-        if c >= num then
+    local ret = {
+        arr = {}
+    }
+    if meid then
+        ret.merank = rank.map[meid]
+    end
+    for i = lowerb, upperb do
+        local vi = 3 * (i - 1)
+        if vi >= #arr then
             break
         end
+        table.insert(ret.arr, arr[vi + 1])
+        table.insert(ret.arr, arr[vi + 2])
     end
+
     return ret
 end
 
@@ -105,10 +123,7 @@ local test = function()
     M.add_score(5, tostring(10), 10)
     M.add_score(5, tostring(20), 5)
     print(dump(dbranks))
-    skynet.timeout(300, function()
-        print(dump(dbranks))
-        print(dump(tp_ranks))
-    end)
+    print(dump(M.get_info(1, 1, 5, tostring(20))))
 end
 
 mgrs.add("ranks", M)
