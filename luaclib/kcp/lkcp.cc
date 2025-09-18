@@ -1,6 +1,5 @@
 #include "ikcp.h"
-extern "C"
-{
+extern "C" {
 #include <string.h>
 
 #include "lauxlib.h"
@@ -14,16 +13,14 @@ using namespace std;
 
 const static char *LKCP_META = "LKCP_META";
 
-struct Kcp_user
-{
+struct Kcp_user {
   skynet_context *ctx;
   int host;
   int conv;
   char address[20];
 };
 
-struct Lkcp
-{
+struct Lkcp {
   static int lkcp_recv(lua_State *L);
   static int lkcp_send(lua_State *L);
   static int lkcp_update(lua_State *L);
@@ -37,8 +34,7 @@ struct Lkcp
   static int cli_output(const char *buf, int len, ikcpcb *kcp, void *user);
 };
 
-int Lkcp::lkcp_gc(lua_State *L)
-{
+int Lkcp::lkcp_gc(lua_State *L) {
   ikcpcb **pp = (ikcpcb **)luaL_checkudata(L, 1, LKCP_META);
   ikcpcb *p = *pp;
   delete (Kcp_user *)(p->user);
@@ -46,8 +42,7 @@ int Lkcp::lkcp_gc(lua_State *L)
   return 0;
 }
 
-int Lkcp::lkcp_send(lua_State *L)
-{
+int Lkcp::lkcp_send(lua_State *L) {
   ikcpcb **pp = (ikcpcb **)luaL_checkudata(L, 1, LKCP_META);
   ikcpcb *p = *pp;
   size_t len = 0;
@@ -56,8 +51,7 @@ int Lkcp::lkcp_send(lua_State *L)
   return 0;
 }
 
-int Lkcp::lkcp_update(lua_State *L)
-{
+int Lkcp::lkcp_update(lua_State *L) {
   ikcpcb **pp = (ikcpcb **)luaL_checkudata(L, 1, LKCP_META);
   ikcpcb *p = *pp;
   int64_t i = luaL_checkinteger(L, 2);
@@ -65,8 +59,7 @@ int Lkcp::lkcp_update(lua_State *L)
   return 0;
 }
 
-int Lkcp::lkcp_recv(lua_State *L)
-{
+int Lkcp::lkcp_recv(lua_State *L) {
   ikcpcb **pp = (ikcpcb **)luaL_checkudata(L, 1, LKCP_META);
   ikcpcb *p = *pp;
   size_t slen = 0;
@@ -75,21 +68,16 @@ int Lkcp::lkcp_recv(lua_State *L)
 
   char buf[1024 * 100];
   int len = ikcp_recv(p, buf, sizeof(buf));
-  if (len > 0)
-  {
+  if (len > 0) {
     lua_pushlstring(L, buf, len);
     return 1;
-  }
-  else
-  {
+  } else {
     return 0;
   }
 }
 
-void Lkcp::lkcp_meta(lua_State *L)
-{
-  if (luaL_newmetatable(L, LKCP_META))
-  {
+void Lkcp::lkcp_meta(lua_State *L) {
+  if (luaL_newmetatable(L, LKCP_META)) {
     luaL_Reg l[] = {{"send", lkcp_send},
                     {"update", lkcp_update},
                     {"recv", lkcp_recv},
@@ -102,8 +90,7 @@ void Lkcp::lkcp_meta(lua_State *L)
   lua_setmetatable(L, -2);
 }
 
-int Lkcp::udp_output(const char *buf, int len, ikcpcb *kcp, void *user)
-{
+int Lkcp::udp_output(const char *buf, int len, ikcpcb *kcp, void *user) {
   Kcp_user *kuser = (Kcp_user *)user;
   socket_sendbuffer sbuf;
   sbuf.id = kuser->host;
@@ -114,12 +101,10 @@ int Lkcp::udp_output(const char *buf, int len, ikcpcb *kcp, void *user)
   return 0;
 }
 
-int Lkcp::create_lkcp(lua_State *L)
-{
+int Lkcp::create_lkcp(lua_State *L) {
   lua_getfield(L, LUA_REGISTRYINDEX, "skynet_context");
   skynet_context *ctx = (skynet_context *)lua_touserdata(L, -1);
-  if (ctx == NULL)
-  {
+  if (ctx == NULL) {
     return luaL_error(L, "Init skynet context first");
   }
 
@@ -131,8 +116,7 @@ int Lkcp::create_lkcp(lua_State *L)
   kuser->host = host;
   size_t sz = 0;
   const char *str = luaL_checklstring(L, 3, &sz);
-  if (sz >= sizeof(kuser->address))
-  {
+  if (sz >= sizeof(kuser->address)) {
     return luaL_error(L, "kcp address len error");
   }
   memcpy(kuser->address, str, sz);
@@ -147,8 +131,7 @@ int Lkcp::create_lkcp(lua_State *L)
   return 1;
 }
 
-int Lkcp::cli_output(const char *buf, int len, ikcpcb *kcp, void *user)
-{
+int Lkcp::cli_output(const char *buf, int len, ikcpcb *kcp, void *user) {
   Kcp_user *kuser = (Kcp_user *)user;
   socket_sendbuffer sbuf;
   sbuf.id = kuser->host;
@@ -159,12 +142,10 @@ int Lkcp::cli_output(const char *buf, int len, ikcpcb *kcp, void *user)
   return 0;
 }
 
-int Lkcp::lkcp_client(lua_State *L)
-{
+int Lkcp::lkcp_client(lua_State *L) {
   lua_getfield(L, LUA_REGISTRYINDEX, "skynet_context");
   skynet_context *ctx = (skynet_context *)lua_touserdata(L, -1);
-  if (ctx == NULL)
-  {
+  if (ctx == NULL) {
     return luaL_error(L, "Init skynet context first");
   }
 
@@ -184,14 +165,12 @@ int Lkcp::lkcp_client(lua_State *L)
   return 1;
 }
 
-extern "C"
-{
-  LUAMOD_API int luaopen_lkcp(lua_State *L)
-  {
-    luaL_Reg l[] = {{"create_lkcp", Lkcp::create_lkcp},
-                    {"lkcp_client", Lkcp::lkcp_client},
-                    {NULL, NULL}};
-    luaL_newlib(L, l);
-    return 1;
-  }
+extern "C" {
+LUAMOD_API int luaopen_lkcp(lua_State *L) {
+  luaL_Reg l[] = {{"create_lkcp", Lkcp::create_lkcp},
+                  {"lkcp_client", Lkcp::lkcp_client},
+                  {NULL, NULL}};
+  luaL_newlib(L, l);
+  return 1;
+}
 }
