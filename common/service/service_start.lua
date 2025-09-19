@@ -6,7 +6,7 @@ local start_func = function(name)
     local profile = require "skynet.profile"
     require "skynet.manager"
     local codecache = require "skynet.codecache"
-    codecache.mode "EXIST"
+    codecache.mode "OFF"
     local cmds = require "common.service.cmds"
     local profile_info = require "common.service.profile"
     local config_load = require "common.service.config_load"
@@ -19,7 +19,6 @@ local start_func = function(name)
     local package_reload = require "common.service.service_reload"
     local service_dir = package_reload.get_service_dir()
     local hotreload = function()
-        -- codecache.clear()
         config_load.reload()
         package_reload.remove_hotreload_package()
         package_reload.dir_require(service_dir .. "/cmd")
