@@ -40,11 +40,9 @@ struct Rank {
 
   void evict() {
     if (info_.size() <= num_) return;
-    auto it = info_.rbegin();
-    if (it == info_.rend()) return;
-    auto uid = it->uid_;
-    id_it_.erase(uid);
-    info_.erase(*it);
+    auto it = prev(info_.end());
+    id_it_.erase(it->uid_);
+    info_.erase(it);
   }
 
   void dump() {
@@ -136,7 +134,7 @@ void Lrank::lrank_meta(lua_State *L) {
 
 int Lrank::create_lrank(lua_State *L) {
   int max_num = luaL_checkinteger(L, 1);
-  if (max_num <= 0) return 0;
+  if (max_num <= 0) return luaL_error(L, "create lrank argu err");
   Rank *p = new Rank();
   p->num_ = max_num;
   Rank **pp = (Rank **)lua_newuserdata(L, sizeof(p));
