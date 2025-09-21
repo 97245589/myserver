@@ -43,7 +43,7 @@ local init_rpc = function()
     skynet.dispatch(function(_, _, cmd, ...)
         local func = cmds[cmd]
         if func then
-            skynet.ret(skynet.pack(func(...)))
+            skynet.retpack(func(...))
         else
             skynet.response()(false)
         end
