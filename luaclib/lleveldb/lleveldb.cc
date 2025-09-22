@@ -35,8 +35,9 @@ struct Lleveldb {
   static int hdel(lua_State *L);
   static int hmget(lua_State *L);
 
-  static void search_key(leveldb::DB *&db, string str,
-                         function<void(string, string, string)> func);
+  static void search_key(
+      leveldb::DB *&db, string str,
+      function<void(const string &, const string &, const string &)> func);
 
   const static char split_ = 0xff;
 };
@@ -113,8 +114,9 @@ int Lleveldb::realkeys(lua_State *L) {
   return 1;
 }
 
-void Lleveldb::search_key(leveldb::DB *&db, string str,
-                          function<void(string, string, string)> func) {
+void Lleveldb::search_key(
+    leveldb::DB *&db, string str,
+    function<void(const string &, const string &, const string &)> func) {
   string start = str + split_;
   string end = start + char(0xff);
 
