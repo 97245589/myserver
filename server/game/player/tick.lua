@@ -1,13 +1,13 @@
 local require, os, print, pcall = require, os, print, pcall
 local next, pairs = next, pairs
 local skynet = require "skynet"
-local zstd = require "common.tool.zstd"
 local mgrs = require "server.game.player.mgrs"
-
 local profile = require "skynet.profile"
+local client_req = require "server.game.player.client_req"
+local db = require "server.game.player.db"
+
 local profile_info = require "common.service.profile"
 
-local client_req = require "server.game.player.client_req"
 local kick_player = client_req.kick_player
 local players = require"server.game.player.players".players
 
@@ -38,7 +38,7 @@ local tick_save_player = function()
     local i = 1
     for playerid, _ in pairs(playerids) do
         local player = players[playerid]
-        -- print("save player ...", playerid, zstd.pack(player))
+        db.save_player(playerid, player)
         offline_player(player, playerid)
         playerids[playerid] = nil
         i = i + 1

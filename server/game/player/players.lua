@@ -1,11 +1,11 @@
 local require = require
 local skynet = require "skynet"
 local mgrs = require "server.game.player.mgrs"
-local zstd = require "common.tool.zstd"
+local db = require "server.game.player.db"
 
 local players = {}
 local get_player_from_db = function(playerid)
-    local player = {}
+    local player = db.get_player(playerid)
     if players[playerid] then
         return players[playerid]
     end

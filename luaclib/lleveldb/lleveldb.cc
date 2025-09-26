@@ -182,9 +182,10 @@ int Lleveldb::del(lua_State *L) {
 
   leveldb::WriteBatch batch;
 
-  search_key(db, str, [&](string key, string val, string realkey) {
-    batch.Delete(realkey);
-  });
+  search_key(db, str,
+             [&](const string &key, const string &val, const string &realkey) {
+               batch.Delete(realkey);
+             });
 
   db->Write(leveldb::WriteOptions(), &batch);
   return 0;
@@ -199,10 +200,11 @@ int Lleveldb::hkeys(lua_State *L) {
   string str{ps, len};
   int i = 0;
   lua_createtable(L, 0, 0);
-  search_key(db, str, [&](string key, string val, string realkey) {
-    lua_pushlstring(L, key.c_str(), key.size());
-    lua_rawseti(L, -2, ++i);
-  });
+  search_key(db, str,
+             [&](const string &key, const string &val, const string &realkey) {
+               lua_pushlstring(L, key.c_str(), key.size());
+               lua_rawseti(L, -2, ++i);
+             });
   return 1;
 }
 
@@ -216,12 +218,13 @@ int Lleveldb::hgetall(lua_State *L) {
 
   lua_createtable(L, 0, 0);
   int i = 0;
-  search_key(db, str, [&](string key, string val, string realkey) {
-    lua_pushlstring(L, key.c_str(), key.size());
-    lua_rawseti(L, -2, ++i);
-    lua_pushlstring(L, val.c_str(), val.size());
-    lua_rawseti(L, -2, ++i);
-  });
+  search_key(db, str,
+             [&](const string &key, const string &val, const string &realkey) {
+               lua_pushlstring(L, key.c_str(), key.size());
+               lua_rawseti(L, -2, ++i);
+               lua_pushlstring(L, val.c_str(), val.size());
+               lua_rawseti(L, -2, ++i);
+             });
 
   return 1;
 }
