@@ -2,8 +2,9 @@ local require, print, dump = require, print, dump
 local pairs = pairs
 local skynet = require "skynet"
 local cluster = require "skynet.cluster"
+local env = require "common.func.env"
 
-local cluster_name = skynet.getenv("server_name") .. skynet.getenv("server_id")
+local cluster_name = env.clusetr_name()
 local mapaddrs = {}
 
 skynet.fork(function()

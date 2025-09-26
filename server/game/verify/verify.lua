@@ -6,6 +6,7 @@ local crypt = require "skynet.crypt"
 local game_common = require "server.game.game_common"
 local config_load = require "common.service.config_load"
 local cmds = require "common.service.cmds"
+local env = require "common.func.env"
 
 local proto = config_load.proto()
 local host = proto.host
@@ -53,7 +54,7 @@ local verify = function(acc, verify, fd)
     if not acc then
         return
     end
-    if skynet.getenv("local_server") then
+    if env.local_server() then
         save_fd(acc, fd)
         return true
     end

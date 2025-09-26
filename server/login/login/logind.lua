@@ -108,6 +108,7 @@ else
     local skynet = require "skynet"
     local socket = require "skynet.socket"
     local cmds = require "common.service.cmds"
+    local env = require "common.func.env"
 
     local addrs = {}
     local instance = 2
@@ -116,7 +117,7 @@ else
         table.insert(addrs, addr)
     end
 
-    local id = socket.listen("0.0.0.0", skynet.getenv("gate_port"))
+    local id = socket.listen("0.0.0.0", env.gate_port())
     socket.start(id, function(fd, addr)
         local s = addrs[fd % instance + 1]
         skynet.send(s, "lua", fd, addr)

@@ -1,12 +1,13 @@
 local require, print, dump, pcall = require, print, dump, pcall
-local pairs, ipairs, table, next = pairs, ipairs, table, next
+local pairs, table, next = pairs, table, next
 
 local skynet = require "skynet"
 local cluster = require "skynet.cluster"
 local config = require "common.service.service_config"
+local env = require "common.func.env"
 
-local cluster_name = skynet.getenv("server_name") .. skynet.getenv("server_id")
-local host = skynet.getenv("ip") .. ":" .. skynet.getenv("cluster_port")
+local cluster_name = env.clusetr_name()
+local host = env.host()
 print("clustername :", cluster_name, "cluster_host :", host)
 
 local cluster_node = {}
@@ -57,7 +58,7 @@ local node_conn_to_center = function()
 end
 
 skynet.fork(function()
-    if "center" ~= skynet.getenv("server_name") then
+    if "center" ~= env.server_name() then
         while true do
             node_conn_to_center()
             skynet.sleep(300)

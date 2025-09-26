@@ -5,8 +5,9 @@ local skynet = require "skynet"
 local cluster = require "skynet.cluster"
 local cluster_start = require "common.service.cluster_start"
 local cmds = require "common.service.cmds"
+local env = require "common.func.env"
 
-local cluster_name = skynet.getenv("server_name") .. skynet.getenv("server_id")
+local cluster_name = env.clusetr_name()
 local mapaddrs
 
 cmds.set_mapaddrs = function(addrs)

@@ -4,12 +4,13 @@ local skynet = require "skynet"
 local cmds = require "common.service.cmds"
 local proto = require"common.service.config_load".proto()
 local gamecommon = require "server.game.game_common"
+local env = require "common.func.env"
 
 local host = proto.host
 
 local gate = skynet.newservice("gate")
 skynet.call(gate, "lua", "open", {
-    port = skynet.getenv("gate_port"),
+    port = env.gate_port(),
     maxclient = 8888,
     nodelay = true
 })

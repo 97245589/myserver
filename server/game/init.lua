@@ -5,6 +5,7 @@ require "common.tool.lua_tool"
 local skynet = require "skynet"
 local socket = require "skynet.socket"
 require "skynet.manager"
+local env = require "common.func.env"
 local gamecommon = require "server.game.game_common"
 
 skynet.register("game_init")
@@ -26,8 +27,8 @@ local init_services = function()
     skynet.newservice("server/game/watchdog/start", "watchdog")
     skynet.newservice("server/game/verify/start", "verify")
 
-    if not skynet.getenv("local_server") then
-        skynet.timeout(100, function ()
+    if not env.local_server() then
+        skynet.timeout(100, function()
             skynet.newservice("server/game/cluster/start", "cluser")
         end)
     end
@@ -51,7 +52,7 @@ local init_rpc = function()
 end
 
 local console_init = function()
-    if skynet.getenv("daemon") then
+    if env.daemon() then
         return
     end
 

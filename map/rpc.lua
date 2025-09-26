@@ -6,8 +6,9 @@ local world = require "map.world"
 local skynet = require "skynet"
 local cluster = require "skynet.cluster"
 local gamecommon = require "server.game.game_common"
+local env = require "common.func.env"
 
-local cluster_name = skynet.getenv("server_name") .. skynet.getenv("server_id")
+local cluster_name = env.clusetr_name()
 
 local playerid_src = {}
 local watchid_playerid = {}
