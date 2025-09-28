@@ -51,7 +51,7 @@ struct Llru {
 
   static int lru_gc(lua_State *L);
   static void lru_meta(lua_State *L);
-  static int create_lru(lua_State *L);
+  static int create(lua_State *L);
 };
 
 int Llru::update(lua_State *L) {
@@ -87,7 +87,7 @@ void Llru::lru_meta(lua_State *L) {
   lua_setmetatable(L, -2);
 }
 
-int Llru::create_lru(lua_State *L) {
+int Llru::create(lua_State *L) {
   int num = luaL_checkinteger(L, 1);
   if (num <= 0) return 0;
   Lru *p = new Lru();
@@ -100,7 +100,7 @@ int Llru::create_lru(lua_State *L) {
 
 extern "C" {
 LUAMOD_API int luaopen_lutil_lru(lua_State *L) {
-  luaL_Reg funcs[] = {{"create_lru", Llru::create_lru}, {NULL, NULL}};
+  luaL_Reg funcs[] = {{"create", Llru::create}, {NULL, NULL}};
 
   luaL_newlib(L, funcs);
   return 1;
