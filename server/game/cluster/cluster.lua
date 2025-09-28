@@ -5,12 +5,12 @@ local crypt = require "skynet.crypt"
 local cluster = require "skynet.cluster"
 local cmds = require "common.service.cmds"
 local gamecommon = require "server.game.game_common"
+local env = require "common.func.env"
 
-local serverid = skynet.getenv("server_id")
-local ip = skynet.getenv("ip")
+local serverid = env.server_id()
 local gameserver_info = {
     serverid = serverid,
-    host = ip .. ":" .. skynet.getenv("gate_port")
+    host = env.game_outer_host()
 }
 
 cmds.gameserver_info = function()

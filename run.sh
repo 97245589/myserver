@@ -1,5 +1,6 @@
 localip=`ifconfig | grep inet | head -1 | awk '{print $2}'`
 export IP="0.0.0.0"
+export OUTER_IP="0.0.0.0"
 
 # export ROOT=$(cd `dirname $0`; pwd)
 # export DAEMON=false

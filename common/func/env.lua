@@ -3,18 +3,26 @@ local skynet = require "skynet"
 
 local server_name = skynet.getenv("server_name")
 local server_id = skynet.getenv("server_id")
-
 local cluster_name = server_name .. server_id
 
 local host = skynet.getenv("ip") .. ":" .. skynet.getenv("cluster_port")
 
 local local_server = skynet.getenv("local_server")
+if local_server == "nil" or local_server == "false" then
+    local_server = nil
+end
 
 local daemon = skynet.getenv("daemon")
 
 local gate_port = skynet.getenv("gate_port")
 
+local game_outer_host
 local M = {}
+
+M.game_outer_host = function()
+    game_outer_host = game_outer_host or skynet.getenv("outer_ip") .. ":" .. gate_port
+    return game_outer_host
+end
 
 M.gate_port = function()
     return gate_port
