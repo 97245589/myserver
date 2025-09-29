@@ -5,9 +5,9 @@ local skynet = require "skynet"
 local mode = ...
 
 if mode == "child" then
-    local table = table
+    local env = require "common.func.env"
     local lleveldb = require "lleveldb"
-    local db = lleveldb.create("db")
+    local db = lleveldb.create("db/" .. env.clusetr_name())
     local CMD = {}
     CMD.realkeys = function()
         return db:realkeys()

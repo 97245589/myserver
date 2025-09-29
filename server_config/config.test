@@ -1,5 +1,6 @@
 server_name = "test"
 debug_console_port = 10400
+server_id = 1
 
 thread = 2
 harbor = 0
