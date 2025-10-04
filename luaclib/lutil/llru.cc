@@ -49,8 +49,8 @@ struct Lru {
 struct Llru {
   static int update(lua_State *L);
 
-  static int lru_gc(lua_State *L);
-  static void lru_meta(lua_State *L);
+  static int gc(lua_State *L);
+  static void meta(lua_State *L);
   static int create(lua_State *L);
 };
 
@@ -67,13 +67,13 @@ int Llru::update(lua_State *L) {
   return 1;
 }
 
-int Llru::lru_gc(lua_State *L) {
+int Llru::gc(lua_State *L) {
   auto pp = (Lru **)luaL_checkudata(L, 1, LLRU_META);
   delete *pp;
   return 0;
 }
 
-void Llru::lru_meta(lua_State *L) {
+void Llru::meta(lua_State *L) {
   if (luaL_newmetatable(L, LLRU_META)) {
     luaL_Reg l[] = {
         {"update", update},
@@ -81,7 +81,7 @@ void Llru::lru_meta(lua_State *L) {
     };
     luaL_newlib(L, l);
     lua_setfield(L, -2, "__index");
-    lua_pushcfunction(L, lru_gc);
+    lua_pushcfunction(L, gc);
     lua_setfield(L, -2, "__gc");
   }
   lua_setmetatable(L, -2);
@@ -94,7 +94,7 @@ int Llru::create(lua_State *L) {
   p->num = num;
   Lru **pp = (Lru **)lua_newuserdata(L, sizeof(p));
   *pp = p;
-  lru_meta(L);
+  meta(L);
   return 1;
 }
 
