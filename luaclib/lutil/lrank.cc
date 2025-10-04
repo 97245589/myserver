@@ -7,7 +7,7 @@ extern "C" {
 #include <ext/pb_ds/assoc_container.hpp>
 #include <ext/pb_ds/tree_policy.hpp>
 #include <iostream>
-#include <map>
+#include <unordered_map>
 #include <sstream>
 #include <string>
 
@@ -31,7 +31,7 @@ struct Rank {
                        __gnu_pbds::tree_order_statistics_node_update>;
 
   ordered_set<Rankele> ranks_;
-  std::map<std::string, ordered_set<Rankele>::iterator> id_it_;
+  std::unordered_map<std::string, ordered_set<Rankele>::iterator> id_it_;
   int32_t max_;
 
   void dump() {
@@ -48,7 +48,7 @@ struct Rank {
   void add(const Rankele &ele) {
     if (auto it = id_it_.find(ele.id_); it != id_it_.end()) {
       ranks_.erase(it->second);
-      id_it_.erase(ele.id_);
+      id_it_.erase(it);
     }
     auto [it, ok] = ranks_.insert(ele);
     id_it_.insert({ele.id_, it});
